@@ -3,56 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Digital Menu Mini App</title>
+    <title>KAISENTZ TOPUP</title>
     <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* ការកំណត់រចនាបថទូទៅ (CSS) */
         :root {
-            --primary: #ff5722;
-            --bg-color: #f5f7fa;
-            --text-dark: #2d3436;
+            --primary: #ffffff;
+            --bg-color: #000000;
+            --card-bg: #1a1a1a;
+            --text-light: #ffffff;
+            --text-muted: #aaaaaa;
+            --accent: #ff0055; /* ពណ៌លេចធ្លោសម្រាប់ប៊ូតុង */
         }
         body { 
             font-family: 'Kantumruy Pro', sans-serif; 
             margin: 0; 
             background: var(--bg-color); 
-            color: var(--text-dark); 
+            color: var(--text-light); 
             padding-bottom: 80px;
         }
-        /* ផ្នែកខាងលើ (Header) */
+        
+        /* Header */
         .header { 
-            background: #fff; 
+            background: var(--bg-color); 
             padding: 15px 20px; 
             display: flex; 
             align-items: center; 
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
+            justify-content: center;
+            border-bottom: 1px solid #333;
             position: sticky; 
             top: 0; 
             z-index: 100; 
         }
-        .header h1 { margin: 0; font-size: 20px; font-weight: 700; color: var(--primary); }
+        .header img {
+            height: 40px;
+            margin-right: 12px;
+        }
+        .header h1 { 
+            margin: 0; 
+            font-size: 22px; 
+            font-weight: 700; 
+            color: var(--primary); 
+            letter-spacing: 1px;
+        }
         
-        /* ប្រភេទម្ហូប (Categories) */
+        /* ហ្គេម (Categories) */
         .categories { 
             display: flex; 
             overflow-x: auto; 
             padding: 15px; 
-            background: #fff; 
+            background: var(--bg-color); 
             gap: 10px; 
+            border-bottom: 1px solid #333;
         }
         .categories::-webkit-scrollbar { display: none; }
         .category { 
             padding: 8px 20px; 
-            background: #f1f2f6; 
+            background: var(--card-bg); 
+            border: 1px solid #333;
             border-radius: 20px; 
             white-space: nowrap; 
             cursor: pointer; 
             font-size: 14px;
             font-weight: 600;
+            color: var(--text-muted);
         }
-        .category.active { background: var(--primary); color: #fff; }
+        .category.active { 
+            background: var(--primary); 
+            color: #000; 
+            border-color: var(--primary);
+        }
         
-        /* បញ្ជីម្ហូប (Menu Items) */
+        /* បញ្ជីសេវាកម្ម (Topup Packages) */
         .menu-container { 
             padding: 15px; 
             display: grid; 
@@ -60,21 +81,32 @@
             gap: 15px; 
         }
         .menu-item { 
-            background: #fff; 
+            background: var(--card-bg); 
             border-radius: 12px; 
+            border: 1px solid #333;
             overflow: hidden; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02); 
             display: flex; 
             flex-direction: column;
             transition: transform 0.2s;
         }
         .menu-item:active { transform: scale(0.98); }
-        .menu-item img { width: 100%; height: 140px; object-fit: cover; }
-        .item-info { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;}
-        .item-title { font-size: 15px; margin: 0 0 5px; font-weight: 600; }
-        .item-price { color: var(--primary); font-weight: 700; font-size: 16px; margin-bottom: 10px; }
+        .package-icon {
+            font-size: 40px;
+            text-align: center;
+            padding: 20px 0;
+            background: #222;
+        }
+        .item-info { 
+            padding: 12px; 
+            flex-grow: 1; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between;
+        }
+        .item-title { font-size: 16px; margin: 0 0 5px; font-weight: 700; }
+        .item-price { color: var(--accent); font-weight: 700; font-size: 16px; margin-bottom: 10px; }
         .add-btn { 
-            background: #ffebe6; 
+            background: transparent; 
             color: var(--primary); 
             border: 1px solid var(--primary); 
             padding: 8px; 
@@ -84,17 +116,17 @@
             font-weight: 700;
             font-family: 'Kantumruy Pro', sans-serif;
         }
-        .add-btn:active { background: var(--primary); color: #fff; }
+        .add-btn:active { background: var(--primary); color: #000; }
         
         /* កន្ត្រកទំនិញ (Cart Bottom Bar) */
         .cart-bar { 
             position: fixed; 
             bottom: 0; 
             width: 100%; 
-            background: #fff; 
+            background: var(--card-bg); 
             padding: 15px 20px; 
             box-sizing: border-box; 
-            box-shadow: 0 -4px 15px rgba(0,0,0,0.05); 
+            border-top: 1px solid #333;
             display: flex; 
             justify-content: space-between; 
             align-items: center;
@@ -103,11 +135,11 @@
         }
         .cart-bar.show { transform: translateY(0); }
         .cart-total { display: flex; flex-direction: column; }
-        .cart-total span { font-size: 12px; color: #7f8c8d; }
-        .cart-total strong { color: var(--primary); font-size: 18px; }
+        .cart-total span { font-size: 12px; color: var(--text-muted); }
+        .cart-total strong { color: var(--accent); font-size: 18px; }
         .checkout-btn { 
             background: var(--primary); 
-            color: #fff; 
+            color: #000; 
             border: none; 
             padding: 12px 25px; 
             border-radius: 25px; 
@@ -119,18 +151,19 @@
 </head>
 <body>
     <div class="header">
-        <h1>🍽️ ភោជនីយដ្ឋាន ឌីជីថល</h1>
+        <img src="image.png" alt="KAISENTZ TOPUP Logo">
+        <h1>KAISENTZ</h1>
     </div>
     
     <div class="categories">
-        <div class="category active">ពេញនិយម 🌟</div>
-        <div class="category">អាហារ 🍛</div>
-        <div class="category">ភេសជ្ជៈ 🧋</div>
-        <div class="category">បង្អែម 🍰</div>
+        <div class="category active">Mobile Legends</div>
+        <div class="category">PUBG Mobile</div>
+        <div class="category">Free Fire</div>
+        <div class="category">Valorant</div>
     </div>
 
     <div class="menu-container" id="menuList">
-        <!-- ទិន្នន័យម្ហូបនឹងត្រូវ Render នៅទីនេះដោយ JavaScript -->
+        <!-- ទិន្នន័យ Topup នឹងត្រូវ Render ទីនេះ -->
     </div>
 
     <div class="cart-bar" id="cartBar">
@@ -139,49 +172,49 @@
             <strong id="totalPrice">$0.00</strong>
         </div>
         <button class="checkout-btn" onclick="checkout()">
-            មើលកន្ត្រក (<span id="cartCount">0</span>)
+            បញ្ជាក់ការទិញ (<span id="cartCount">0</span>)
         </button>
     </div>
 
     <script>
-        // ទិន្នន័យម្ហូប (Mock Data)
+        // ទិន្នន័យកញ្ចប់ Topup (Mock Data)
         const products = [
-            { id: 1, name: 'បាយឆាម្រះព្រៅសាច់គោ', price: 2.50, img: 'https://images.unsplash.com/photo-1564834724105-918b73d1b9e0?w=300&q=80' },
-            { id: 2, name: 'គុយទាវភ្នំពេញ', price: 3.00, img: 'https://images.unsplash.com/photo-1555126634-323283e090fa?w=300&q=80' },
-            { id: 3, name: 'កាហ្វេទឹកដោះគោទឹកកក', price: 1.50, img: 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=300&q=80' },
-            { id: 4, name: 'តែក្រូចឆ្មា', price: 1.25, img: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=300&q=80' },
-            { id: 5, name: 'មាន់បំពង', price: 4.50, img: 'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=300&q=80' },
-            { id: 6, name: 'ការ៉េម', price: 2.00, img: 'https://images.unsplash.com/photo-1570197781417-0a5237500ae3?w=300&q=80' }
+            { id: 1, name: '86 Diamonds', price: 1.00, icon: '💎' },
+            { id: 2, name: '172 Diamonds', price: 2.00, icon: '💎' },
+            { id: 3, name: '257 Diamonds', price: 3.00, icon: '💎' },
+            { id: 4, name: '706 Diamonds', price: 8.00, icon: '💎' },
+            { id: 5, name: 'Weekly Pass', price: 1.80, icon: '🎟️' },
+            { id: 6, name: 'Twilight Pass', price: 9.50, icon: '🌟' }
         ];
 
         let cart = [];
 
-        // មុខងារបង្ហាញម្ហូបនៅលើអេក្រង់
+        // បង្ហាញបញ្ជី Topup
         function renderMenu() {
             const menuList = document.getElementById('menuList');
             menuList.innerHTML = '';
             products.forEach(p => {
                 menuList.innerHTML += `
                     <div class="menu-item">
-                        <img src="${p.img}" alt="${p.name}">
+                        <div class="package-icon">${p.icon}</div>
                         <div class="item-info">
                             <h3 class="item-title">${p.name}</h3>
                             <div class="item-price">$${p.price.toFixed(2)}</div>
-                            <button class="add-btn" onclick="addToCart(${p.id})">បន្ថែម +</button>
+                            <button class="add-btn" onclick="addToCart(${p.id})">ជ្រើសរើស</button>
                         </div>
                     </div>
                 `;
             });
         }
 
-        // មុខងារបន្ថែមចូលកន្ត្រក
+        // បន្ថែមចូលកន្ត្រក
         function addToCart(id) {
             const product = products.find(p => p.id === id);
             cart.push(product);
             updateCartUI();
         }
 
-        // មុខងារ Update តម្លៃ និងចំនួន
+        // ធ្វើបច្ចុប្បន្នភាពកន្ត្រក
         function updateCartUI() {
             const cartBar = document.getElementById('cartBar');
             document.getElementById('cartCount').innerText = cart.length;
@@ -189,7 +222,6 @@
             const total = cart.reduce((sum, item) => sum + item.price, 0);
             document.getElementById('totalPrice').innerText = `$${total.toFixed(2)}`;
 
-            // បង្ហាញ ឬ លាក់ Cart Bar
             if(cart.length > 0) {
                 cartBar.classList.add('show');
             } else {
@@ -197,18 +229,16 @@
             }
         }
 
-        // មុខងារ Checkout
+        // បញ្ជាក់ការទិញ
         function checkout() {
             if(cart.length === 0) return;
             const total = cart.reduce((sum, item) => sum + item.price, 0);
-            alert(`✅ ការកុម្ម៉ង់ទទួលបានជោគជ័យ!\nចំនួនមុខម្ហូប: ${cart.length} មុខ\nសរុបទឹកប្រាក់: $${total.toFixed(2)}\n\nអរគុណសម្រាប់ការគាំទ្រ!`);
+            alert(`✅ ការបញ្ជាទិញទទួលបានជោគជ័យ!\nសរុបទឹកប្រាក់: $${total.toFixed(2)}\n\nសូមរង់ចាំការបញ្ចូលពេជ្រពី Admin!`);
             
-            // Clear កន្ត្រកបន្ទាប់ពី Checkout
             cart = [];
             updateCartUI();
         }
 
-        // ដំណើរការពេលបើក App លើកដំបូង
         renderMenu();
     </script>
 </body>
