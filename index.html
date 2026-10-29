@@ -7,139 +7,163 @@
     <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #ffffff;
-            --bg-color: #000000;
-            --card-bg: #1a1a1a;
+            --bg-color: #1a1a2e; /* ពណ៌ខៀវងងឹតបែប 3D */
+            --card-bg: #16213e;
+            --primary: #e94560; /* ពណ៌លេចធ្លោ (ក្រហមផ្កាឈូក) */
             --text-light: #ffffff;
-            --text-muted: #aaaaaa;
-            --accent: #ff0055; /* ពណ៌លេចធ្លោសម្រាប់ប៊ូតុង */
+            --text-muted: #8b92a5;
         }
         body { 
             font-family: 'Kantumruy Pro', sans-serif; 
             margin: 0; 
             background: var(--bg-color); 
             color: var(--text-light); 
-            padding-bottom: 80px;
+            padding-bottom: 90px;
         }
         
-        /* Header */
+        /* Header 3D */
         .header { 
-            background: var(--bg-color); 
+            background: linear-gradient(145deg, #18182b, #1c1c31);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             padding: 15px 20px; 
             display: flex; 
             align-items: center; 
             justify-content: center;
-            border-bottom: 1px solid #333;
             position: sticky; 
             top: 0; 
             z-index: 100; 
         }
         .header img {
-            height: 40px;
+            height: 45px;
             margin-right: 12px;
+            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.5));
         }
         .header h1 { 
             margin: 0; 
             font-size: 22px; 
             font-weight: 700; 
-            color: var(--primary); 
-            letter-spacing: 1px;
+            color: var(--text-light); 
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
-        
-        /* ហ្គេម (Categories) */
-        .categories { 
-            display: flex; 
-            overflow-x: auto; 
-            padding: 15px; 
-            background: var(--bg-color); 
-            gap: 10px; 
-            border-bottom: 1px solid #333;
-        }
-        .categories::-webkit-scrollbar { display: none; }
-        .category { 
-            padding: 8px 20px; 
-            background: var(--card-bg); 
-            border: 1px solid #333;
-            border-radius: 20px; 
-            white-space: nowrap; 
-            cursor: pointer; 
-            font-size: 14px;
+        .back-btn {
+            position: absolute;
+            left: 15px;
+            background: linear-gradient(145deg, #1c2645, #141c33);
+            box-shadow: 3px 3px 6px #0d1222, -3px -3px 6px #212c50;
+            border: none;
+            color: var(--text-light);
+            padding: 8px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: none; /* លាក់សិន វានឹងបង្ហាញពេលចូលមើល Package */
+            font-family: 'Kantumruy Pro', sans-serif;
             font-weight: 600;
-            color: var(--text-muted);
         }
-        .category.active { 
-            background: var(--primary); 
-            color: #000; 
-            border-color: var(--primary);
+        .back-btn:active {
+            box-shadow: inset 3px 3px 6px #0d1222, inset -3px -3px 6px #212c50;
         }
         
-        /* បញ្ជីសេវាកម្ម (Topup Packages) */
-        .menu-container { 
-            padding: 15px; 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); 
-            gap: 15px; 
+        /* ហ្គេម (Home View) */
+        .home-container {
+            padding: 20px;
+            display: flex;
+            justify-content: center;
         }
-        .menu-item { 
-            background: var(--card-bg); 
-            border-radius: 12px; 
-            border: 1px solid #333;
-            overflow: hidden; 
+        .game-card {
+            background: linear-gradient(145deg, #182442, #141e37);
+            box-shadow: 8px 8px 16px #0b111e, -8px -8px 16px #21315a;
+            border-radius: 20px;
+            padding: 20px;
+            width: 100%;
+            max-width: 300px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .game-card:active {
+            transform: translateY(4px);
+            box-shadow: inset 5px 5px 10px #0b111e, inset -5px -5px 10px #21315a;
+        }
+        .game-card img {
+            width: 120px;
+            height: 120px;
+            border-radius: 25px;
+            object-fit: cover;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            margin-bottom: 15px;
+        }
+        .game-card h2 { margin: 0; font-size: 22px; color: var(--text-light); }
+
+        /* បញ្ជីសេវាកម្ម (Package View) */
+        .package-container {
+            display: none; /* លាក់សិន */
+            padding: 20px; 
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); 
+            gap: 20px; 
+        }
+        .package-item { 
+            background: linear-gradient(145deg, #182442, #141e37);
+            box-shadow: 5px 5px 10px #0b111e, -5px -5px 10px #21315a;
+            border-radius: 15px; 
+            padding: 15px;
             display: flex; 
             flex-direction: column;
-            transition: transform 0.2s;
-        }
-        .menu-item:active { transform: scale(0.98); }
-        .package-icon {
-            font-size: 40px;
+            align-items: center;
             text-align: center;
-            padding: 20px 0;
-            background: #222;
         }
-        .item-info { 
-            padding: 12px; 
-            flex-grow: 1; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: space-between;
+        .pkg-icon {
+            font-size: 35px;
+            margin-bottom: 10px;
+            filter: drop-shadow(2px 4px 4px rgba(0,0,0,0.4));
         }
-        .item-title { font-size: 16px; margin: 0 0 5px; font-weight: 700; }
-        .item-price { color: var(--accent); font-weight: 700; font-size: 16px; margin-bottom: 10px; }
-        .add-btn { 
-            background: transparent; 
+        .pkg-title { font-size: 16px; margin: 0 0 5px; font-weight: 700; color: #fff;}
+        .pkg-price { color: var(--primary); font-weight: 700; font-size: 18px; margin-bottom: 15px; }
+        
+        /* ប៊ូតុង 3D */
+        .btn-3d { 
+            background: linear-gradient(145deg, #1c2645, #141c33);
+            box-shadow: 3px 3px 8px #0d1222, -3px -3px 8px #212c50;
             color: var(--primary); 
-            border: 1px solid var(--primary); 
-            padding: 8px; 
+            border: none; 
+            padding: 10px; 
             width: 100%; 
-            border-radius: 8px; 
+            border-radius: 10px; 
             cursor: pointer; 
             font-weight: 700;
             font-family: 'Kantumruy Pro', sans-serif;
+            transition: all 0.1s;
         }
-        .add-btn:active { background: var(--primary); color: #000; }
+        .btn-3d:active { 
+            box-shadow: inset 3px 3px 6px #0d1222, inset -3px -3px 6px #212c50;
+            color: #fff;
+        }
         
         /* កន្ត្រកទំនិញ (Cart Bottom Bar) */
         .cart-bar { 
             position: fixed; 
             bottom: 0; 
             width: 100%; 
-            background: var(--card-bg); 
+            background: linear-gradient(145deg, #1a1a2e, #131322);
+            box-shadow: 0 -10px 20px rgba(0,0,0,0.5);
             padding: 15px 20px; 
             box-sizing: border-box; 
-            border-top: 1px solid #333;
             display: flex; 
             justify-content: space-between; 
             align-items: center;
-            transform: translateY(100%);
-            transition: transform 0.3s ease;
+            transform: translateY(120%);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
         }
         .cart-bar.show { transform: translateY(0); }
         .cart-total { display: flex; flex-direction: column; }
         .cart-total span { font-size: 12px; color: var(--text-muted); }
-        .cart-total strong { color: var(--accent); font-size: 18px; }
+        .cart-total strong { color: var(--primary); font-size: 20px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);}
+        
         .checkout-btn { 
-            background: var(--primary); 
-            color: #000; 
+            background: linear-gradient(145deg, #f94a67, #d23e56);
+            box-shadow: 4px 4px 10px #0b111e, -2px -2px 5px #2a375e;
+            color: #fff; 
             border: none; 
             padding: 12px 25px; 
             border-radius: 25px; 
@@ -147,37 +171,45 @@
             cursor: pointer;
             font-family: 'Kantumruy Pro', sans-serif;
         }
+        .checkout-btn:active {
+            box-shadow: inset 4px 4px 10px #8c293a, inset -4px -4px 10px #ff617e;
+        }
     </style>
 </head>
 <body>
     <div class="header">
-        <img src="image.png" alt="KAISENTZ TOPUP Logo">
+        <button class="back-btn" id="backBtn" onclick="goBack()">ត្រឡប់</button>
+        <img src="https://img.sanishtech.com/u/5322da98db8de164b44bde759003c5d0.png" alt="KAISENTZ Logo">
         <h1>KAISENTZ</h1>
     </div>
     
-    <div class="categories">
-        <div class="category active">Mobile Legends</div>
-        <div class="category">PUBG Mobile</div>
-        <div class="category">Free Fire</div>
-        <div class="category">Valorant</div>
+    <!-- ទំព័រជ្រើសរើសហ្គេម -->
+    <div class="home-container" id="homeView">
+        <div class="game-card" onclick="showPackages()">
+            <img src="https://img.sanishtech.com/u/9ebcfb0522c1660037edd5f764a1669a.png" alt="Mobile KH">
+            <h2>Mobile KH</h2>
+            <p style="color: var(--text-muted); font-size: 14px; margin-top: 5px;">ចុចដើម្បីជ្រើសរើសកញ្ចប់</p>
+        </div>
     </div>
 
-    <div class="menu-container" id="menuList">
-        <!-- ទិន្នន័យ Topup នឹងត្រូវ Render ទីនេះ -->
+    <!-- ទំព័រ Package កុម្ម៉ង់ -->
+    <div class="package-container" id="packageView">
+        <!-- ទិន្នន័យ Package នឹងត្រូវ Render ទីនេះ -->
     </div>
 
+    <!-- កន្ត្រកខាងក្រោម -->
     <div class="cart-bar" id="cartBar">
         <div class="cart-total">
             <span>តម្លៃសរុប:</span>
             <strong id="totalPrice">$0.00</strong>
         </div>
         <button class="checkout-btn" onclick="checkout()">
-            បញ្ជាក់ការទិញ (<span id="cartCount">0</span>)
+            ទិញឥឡូវនេះ (<span id="cartCount">0</span>)
         </button>
     </div>
 
     <script>
-        // ទិន្នន័យកញ្ចប់ Topup (Mock Data)
+        // ទិន្នន័យកញ្ចប់ Topup របស់ Mobile KH
         const products = [
             { id: 1, name: '86 Diamonds', price: 1.00, icon: '💎' },
             { id: 2, name: '172 Diamonds', price: 2.00, icon: '💎' },
@@ -189,32 +221,42 @@
 
         let cart = [];
 
-        // បង្ហាញបញ្ជី Topup
+        // បង្ហាញបញ្ជី Package
         function renderMenu() {
-            const menuList = document.getElementById('menuList');
-            menuList.innerHTML = '';
+            const packageView = document.getElementById('packageView');
+            packageView.innerHTML = '';
             products.forEach(p => {
-                menuList.innerHTML += `
-                    <div class="menu-item">
-                        <div class="package-icon">${p.icon}</div>
-                        <div class="item-info">
-                            <h3 class="item-title">${p.name}</h3>
-                            <div class="item-price">$${p.price.toFixed(2)}</div>
-                            <button class="add-btn" onclick="addToCart(${p.id})">ជ្រើសរើស</button>
-                        </div>
+                packageView.innerHTML += `
+                    <div class="package-item">
+                        <div class="pkg-icon">${p.icon}</div>
+                        <h3 class="pkg-title">${p.name}</h3>
+                        <div class="pkg-price">$${p.price.toFixed(2)}</div>
+                        <button class="btn-3d" onclick="addToCart(${p.id})">បន្ថែម +</button>
                     </div>
                 `;
             });
         }
 
-        // បន្ថែមចូលកន្ត្រក
+        // ការបញ្ជាផ្លាស់ប្តូរទំព័រ (Navigation)
+        function showPackages() {
+            document.getElementById('homeView').style.display = 'none';
+            document.getElementById('packageView').style.display = 'grid';
+            document.getElementById('backBtn').style.display = 'block';
+        }
+
+        function goBack() {
+            document.getElementById('packageView').style.display = 'none';
+            document.getElementById('homeView').style.display = 'flex';
+            document.getElementById('backBtn').style.display = 'none';
+        }
+
+        // មុខងារកន្ត្រក
         function addToCart(id) {
             const product = products.find(p => p.id === id);
             cart.push(product);
             updateCartUI();
         }
 
-        // ធ្វើបច្ចុប្បន្នភាពកន្ត្រក
         function updateCartUI() {
             const cartBar = document.getElementById('cartBar');
             document.getElementById('cartCount').innerText = cart.length;
@@ -229,16 +271,16 @@
             }
         }
 
-        // បញ្ជាក់ការទិញ
         function checkout() {
             if(cart.length === 0) return;
             const total = cart.reduce((sum, item) => sum + item.price, 0);
-            alert(`✅ ការបញ្ជាទិញទទួលបានជោគជ័យ!\nសរុបទឹកប្រាក់: $${total.toFixed(2)}\n\nសូមរង់ចាំការបញ្ចូលពេជ្រពី Admin!`);
+            alert(`✅ ការបញ្ជាទិញទទួលបានជោគជ័យ!\nសរុបទឹកប្រាក់: $${total.toFixed(2)}\n\nសូមផ្ញើវិក្កយបត្រនេះទៅកាន់ Admin តាមរយៈ Telegram!`);
             
             cart = [];
             updateCartUI();
         }
 
+        // ដំឡើងទិន្នន័យដំបូង
         renderMenu();
     </script>
 </body>
