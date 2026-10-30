@@ -1,287 +1,481 @@
 <!DOCTYPE html>
-<html lang="km">
+<html lang="km" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KAISENTZ TOPUP</title>
-    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MiniGit - បណ្ណាល័យកូដទំនើប</title>
+    <!-- ប្រើប្រាស់ Tailwind CSS សម្រាប់រចនាប័ទ្ម -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- ប្រើប្រាស់ Font Awesome សម្រាប់ Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts សម្រាប់អក្សរខ្មែរ និងអង់គ្លេស -->
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Kantumruy Pro', 'sans-serif'],
+                    },
+                    colors: {
+                        darkBg: '#0f172a',
+                        cardBg: '#1e293b',
+                        accent: '#3b82f6'
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        :root {
-            --bg-color: #1a1a2e; /* ពណ៌ខៀវងងឹតបែប 3D */
-            --card-bg: #16213e;
-            --primary: #e94560; /* ពណ៌លេចធ្លោ (ក្រហមផ្កាឈូក) */
-            --text-light: #ffffff;
-            --text-muted: #8b92a5;
+        body {
+            background-color: #0b0f19;
+            color: #f8fafc;
         }
-        body { 
-            font-family: 'Kantumruy Pro', sans-serif; 
-            margin: 0; 
-            background: var(--bg-color); 
-            color: var(--text-light); 
-            padding-bottom: 90px;
+        .glass-nav {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
-        
-        /* Header 3D */
-        .header { 
-            background: linear-gradient(145deg, #18182b, #1c1c31);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            padding: 15px 20px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            position: sticky; 
-            top: 0; 
-            z-index: 100; 
+        .repo-card {
+            background: #151c2c;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            transition: all 0.3s ease;
         }
-        .header img {
-            height: 45px;
-            margin-right: 12px;
-            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.5));
-        }
-        .header h1 { 
-            margin: 0; 
-            font-size: 22px; 
-            font-weight: 700; 
-            color: var(--text-light); 
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
-        .back-btn {
-            position: absolute;
-            left: 15px;
-            background: linear-gradient(145deg, #1c2645, #141c33);
-            box-shadow: 3px 3px 6px #0d1222, -3px -3px 6px #212c50;
-            border: none;
-            color: var(--text-light);
-            padding: 8px 12px;
-            border-radius: 10px;
-            cursor: pointer;
-            display: none; /* លាក់សិន វានឹងបង្ហាញពេលចូលមើល Package */
-            font-family: 'Kantumruy Pro', sans-serif;
-            font-weight: 600;
-        }
-        .back-btn:active {
-            box-shadow: inset 3px 3px 6px #0d1222, inset -3px -3px 6px #212c50;
-        }
-        
-        /* ហ្គេម (Home View) */
-        .home-container {
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-        }
-        .game-card {
-            background: linear-gradient(145deg, #182442, #141e37);
-            box-shadow: 8px 8px 16px #0b111e, -8px -8px 16px #21315a;
-            border-radius: 20px;
-            padding: 20px;
-            width: 100%;
-            max-width: 300px;
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .game-card:active {
-            transform: translateY(4px);
-            box-shadow: inset 5px 5px 10px #0b111e, inset -5px -5px 10px #21315a;
-        }
-        .game-card img {
-            width: 120px;
-            height: 120px;
-            border-radius: 25px;
-            object-fit: cover;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
-            margin-bottom: 15px;
-        }
-        .game-card h2 { margin: 0; font-size: 22px; color: var(--text-light); }
-
-        /* បញ្ជីសេវាកម្ម (Package View) */
-        .package-container {
-            display: none; /* លាក់សិន */
-            padding: 20px; 
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); 
-            gap: 20px; 
-        }
-        .package-item { 
-            background: linear-gradient(145deg, #182442, #141e37);
-            box-shadow: 5px 5px 10px #0b111e, -5px -5px 10px #21315a;
-            border-radius: 15px; 
-            padding: 15px;
-            display: flex; 
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-        .pkg-icon {
-            font-size: 35px;
-            margin-bottom: 10px;
-            filter: drop-shadow(2px 4px 4px rgba(0,0,0,0.4));
-        }
-        .pkg-title { font-size: 16px; margin: 0 0 5px; font-weight: 700; color: #fff;}
-        .pkg-price { color: var(--primary); font-weight: 700; font-size: 18px; margin-bottom: 15px; }
-        
-        /* ប៊ូតុង 3D */
-        .btn-3d { 
-            background: linear-gradient(145deg, #1c2645, #141c33);
-            box-shadow: 3px 3px 8px #0d1222, -3px -3px 8px #212c50;
-            color: var(--primary); 
-            border: none; 
-            padding: 10px; 
-            width: 100%; 
-            border-radius: 10px; 
-            cursor: pointer; 
-            font-weight: 700;
-            font-family: 'Kantumruy Pro', sans-serif;
-            transition: all 0.1s;
-        }
-        .btn-3d:active { 
-            box-shadow: inset 3px 3px 6px #0d1222, inset -3px -3px 6px #212c50;
-            color: #fff;
-        }
-        
-        /* កន្ត្រកទំនិញ (Cart Bottom Bar) */
-        .cart-bar { 
-            position: fixed; 
-            bottom: 0; 
-            width: 100%; 
-            background: linear-gradient(145deg, #1a1a2e, #131322);
-            box-shadow: 0 -10px 20px rgba(0,0,0,0.5);
-            padding: 15px 20px; 
-            box-sizing: border-box; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
-            transform: translateY(120%);
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border-top-left-radius: 20px;
-            border-top-right-radius: 20px;
-        }
-        .cart-bar.show { transform: translateY(0); }
-        .cart-total { display: flex; flex-direction: column; }
-        .cart-total span { font-size: 12px; color: var(--text-muted); }
-        .cart-total strong { color: var(--primary); font-size: 20px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);}
-        
-        .checkout-btn { 
-            background: linear-gradient(145deg, #f94a67, #d23e56);
-            box-shadow: 4px 4px 10px #0b111e, -2px -2px 5px #2a375e;
-            color: #fff; 
-            border: none; 
-            padding: 12px 25px; 
-            border-radius: 25px; 
-            font-weight: 700; 
-            cursor: pointer;
-            font-family: 'Kantumruy Pro', sans-serif;
-        }
-        .checkout-btn:active {
-            box-shadow: inset 4px 4px 10px #8c293a, inset -4px -4px 10px #ff617e;
+        .repo-card:hover {
+            transform: translateY(-4px);
+            border-color: #3b82f6;
+            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.25);
         }
     </style>
 </head>
-<body>
-    <div class="header">
-        <button class="back-btn" id="backBtn" onclick="goBack()">ត្រឡប់</button>
-        <img src="https://img.sanishtech.com/u/5322da98db8de164b44bde759003c5d0.png" alt="KAISENTZ Logo">
-        <h1>KAISENTZ</h1>
-    </div>
-    
-    <!-- ទំព័រជ្រើសរើសហ្គេម -->
-    <div class="home-container" id="homeView">
-        <div class="game-card" onclick="showPackages()">
-            <img src="https://img.sanishtech.com/u/9ebcfb0522c1660037edd5f764a1669a.png" alt="Mobile KH">
-            <h2>Mobile KH</h2>
-            <p style="color: var(--text-muted); font-size: 14px; margin-top: 5px;">ចុចដើម្បីជ្រើសរើសកញ្ចប់</p>
+<body class="min-h-screen flex flex-col font-sans">
+
+    <!-- របារខាងលើ (Navbar) -->
+    <nav class="glass-nav sticky top-0 z-40 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
+            <!-- Logo -->
+            <div class="flex items-center space-x-3 cursor-pointer">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center shadow-lg shadow-blue-500/30">
+                    <i class="fa-brands fa-github-alt text-white text-xl"></i>
+                </div>
+                <div>
+                    <span class="text-xl font-bold tracking-tight bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">MiniGit</span>
+                    <span class="text-xs bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded-full ml-1">HUB</span>
+                </div>
+            </div>
+
+            <!-- ប្រអប់ស្វែងរក (Search Bar) -->
+            <div class="relative flex-1 max-w-md mx-4">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-gray-400 text-sm"></i>
+                <input type="text" id="searchInput" onkeyup="filterRepos()" placeholder="ស្វែងរក Repository, ភាសាកូដ..." 
+                    class="w-full bg-[#1e293b]/70 border border-gray-700/80 rounded-xl pl-10 pr-4 py-2 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition">
+            </div>
+
+            <!-- ប៊ូតុងសកម្មភាព (Action Buttons) -->
+            <div class="flex items-center space-x-3">
+                <button onclick="openCreateModal()" class="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-sm font-medium px-4 py-2 rounded-xl shadow-lg shadow-blue-600/20 flex items-center space-x-2 transition">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>បង្កើត Repo ថ្មី</span>
+                </button>
+                <div class="w-9 h-9 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center cursor-pointer hover:border-blue-400 transition">
+                    <i class="fa-regular fa-user text-sm text-gray-300"></i>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ផ្ទាំងបដាខាងលើ (Hero Banner - ស្ទីលដូចវេបសាយ Shop) -->
+    <div class="max-w-7xl mx-auto w-full px-6 pt-6">
+        <div class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-blue-900/60 via-indigo-900/50 to-slate-900 border border-blue-500/20 p-8 flex flex-col md:flex-row items-center justify-between">
+            <div class="space-y-3 max-w-xl z-10">
+                <div class="inline-flex items-center space-x-2 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs px-3 py-1 rounded-full">
+                    <i class="fa-solid fa-fire"></i>
+                    <span>វេទិកាចែករំលែកកូដ និងគម្រោង Open Source</span>
+                </div>
+                <h1 class="text-2xl md:text-4xl font-bold text-white leading-tight">
+                    រុករក និងទាញយក <span class="text-cyan-400">Source Code</span> ល្អៗសម្រាប់គម្រោងរបស់អ្នក
+                </h1>
+                <p class="text-gray-400 text-sm">
+                    បណ្ដុំកូដគំរូ ស្គ្រីប និងកម្មវិធីដែលអាចយកទៅប្រើប្រាស់ ឬសិក្សាបន្ថែមបានដោយសេរី។
+                </p>
+            </div>
+            <div class="mt-6 md:mt-0 flex space-x-4 z-10">
+                <div class="bg-[#0f172a]/80 border border-gray-800 p-4 rounded-xl text-center min-w-[110px]">
+                    <div class="text-2xl font-bold text-white" id="totalReposCount">6</div>
+                    <div class="text-xs text-gray-400 mt-1">Repositories</div>
+                </div>
+                <div class="bg-[#0f172a]/80 border border-gray-800 p-4 rounded-xl text-center min-w-[110px]">
+                    <div class="text-2xl font-bold text-cyan-400">1.2k</div>
+                    <div class="text-xs text-gray-400 mt-1">ទាញយកសរុប</div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- ទំព័រ Package កុម្ម៉ង់ -->
-    <div class="package-container" id="packageView">
-        <!-- ទិន្នន័យ Package នឹងត្រូវ Render ទីនេះ -->
-    </div>
-
-    <!-- កន្ត្រកខាងក្រោម -->
-    <div class="cart-bar" id="cartBar">
-        <div class="cart-total">
-            <span>តម្លៃសរុប:</span>
-            <strong id="totalPrice">$0.00</strong>
+    <!-- ផ្នែកតម្រងប្រភេទ (Category Tabs) -->
+    <div class="max-w-7xl mx-auto w-full px-6 mt-8">
+        <div class="flex items-center space-x-2 overflow-x-auto pb-2 scrollbar-none" id="categoryTabs">
+            <button onclick="setCategory('ALL', this)" class="cat-btn active bg-blue-600 text-white text-xs font-medium px-4 py-2 rounded-lg transition shrink-0">
+                ទាំងអស់ (All)
+            </button>
+            <button onclick="setCategory('JavaScript', this)" class="cat-btn bg-[#151c2c] hover:bg-gray-800 text-gray-300 border border-gray-800 text-xs font-medium px-4 py-2 rounded-lg transition shrink-0 flex items-center space-x-1.5">
+                <span class="w-2 h-2 rounded-full bg-yellow-400"></span>
+                <span>JavaScript</span>
+            </button>
+            <button onclick="setCategory('Python', this)" class="cat-btn bg-[#151c2c] hover:bg-gray-800 text-gray-300 border border-gray-800 text-xs font-medium px-4 py-2 rounded-lg transition shrink-0 flex items-center space-x-1.5">
+                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                <span>Python</span>
+            </button>
+            <button onclick="setCategory('HTML/CSS', this)" class="cat-btn bg-[#151c2c] hover:bg-gray-800 text-gray-300 border border-gray-800 text-xs font-medium px-4 py-2 rounded-lg transition shrink-0 flex items-center space-x-1.5">
+                <span class="w-2 h-2 rounded-full bg-orange-500"></span>
+                <span>HTML/CSS</span>
+            </button>
+            <button onclick="setCategory('TypeScript', this)" class="cat-btn bg-[#151c2c] hover:bg-gray-800 text-gray-300 border border-gray-800 text-xs font-medium px-4 py-2 rounded-lg transition shrink-0 flex items-center space-x-1.5">
+                <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+                <span>TypeScript</span>
+            </button>
         </div>
-        <button class="checkout-btn" onclick="checkout()">
-            ទិញឥឡូវនេះ (<span id="cartCount">0</span>)
-        </button>
     </div>
 
+    <!-- បញ្ជីកាត Repositories (Grid Layout ដូចកាតទំនិញក្នុង Shop) -->
+    <main class="max-w-7xl mx-auto w-full px-6 py-6 flex-1">
+        <div id="repoGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <!-- កាតនឹងត្រូវបង្កើតដោយ JavaScript នៅទីនេះ -->
+        </div>
+    </main>
+
+    <!-- ផ្ទាំងមើលកូដលម្អិត (Code Viewer Modal) -->
+    <div id="codeModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-[#151c2c] border border-gray-700 rounded-2xl max-w-3xl w-full overflow-hidden shadow-2xl">
+            <div class="flex justify-between items-center px-6 py-4 border-b border-gray-800">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-book-bookmark text-blue-400"></i>
+                    <h3 id="modalTitle" class="font-bold text-lg text-white">ឈ្មោះគម្រោង</h3>
+                    <span id="modalBadge" class="text-xs bg-blue-500/20 text-blue-300 px-2.5 py-0.5 rounded-full">Public</span>
+                </div>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+                <p id="modalDesc" class="text-gray-300 text-sm"></p>
+                
+                <!-- កន្លែងបង្ហាញកូដគំរូ -->
+                <div class="bg-[#0b0f19] border border-gray-800 rounded-xl overflow-hidden">
+                    <div class="flex justify-between items-center px-4 py-2 bg-gray-900 border-b border-gray-800 text-xs text-gray-400">
+                        <span id="modalFileName"><i class="fa-regular fa-file-code mr-1"></i> main.js</span>
+                        <button onclick="copyCode()" class="hover:text-white flex items-center space-x-1">
+                            <i class="fa-regular fa-copy"></i>
+                            <span id="copyBtnText">ចម្លងកូដ (Copy)</span>
+                        </button>
+                    </div>
+                    <pre class="p-4 text-xs font-mono text-cyan-300 overflow-x-auto"><code id="modalCodeSample"></code></pre>
+                </div>
+
+                <!-- ប្រអប់ Clone URL -->
+                <div class="flex items-center space-x-2 bg-[#0b0f19] p-2.5 rounded-xl border border-gray-800">
+                    <span class="text-xs font-semibold text-gray-400 px-2">GIT CLONE</span>
+                    <input type="text" id="modalCloneUrl" readonly class="bg-transparent text-xs text-gray-300 flex-1 focus:outline-none font-mono">
+                    <button onclick="alert('ទាញយកឯកសារ ZIP ចាប់ផ្ដើម!')" class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-3 py-1.5 rounded-lg transition">
+                        <i class="fa-solid fa-download mr-1"></i> ទាញយក ZIP
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ផ្ទាំងបង្កើត Repo ថ្មី (Create Repo Modal) -->
+    <div id="createModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-[#151c2c] border border-gray-700 rounded-2xl max-w-md w-full overflow-hidden shadow-2xl">
+            <div class="flex justify-between items-center px-6 py-4 border-b border-gray-800">
+                <h3 class="font-bold text-lg text-white">បង្កើត Repository ថ្មី</h3>
+                <button onclick="closeCreateModal()" class="text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            <form onsubmit="addNewRepo(event)" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">ឈ្មោះ Repository *</label>
+                    <input type="text" id="newRepoName" required placeholder="ឧ. e-commerce-bot" class="w-full bg-[#0b0f19] border border-gray-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">ការពិពណ៌នាខ្លី (Description) *</label>
+                    <textarea id="newRepoDesc" required rows="2" placeholder="រៀបរាប់ពីមុខងាររបស់កូដនេះ..." class="w-full bg-[#0b0f19] border border-gray-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">ភាសាកូដ (Language)</label>
+                    <select id="newRepoLang" class="w-full bg-[#0b0f19] border border-gray-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                        <option value="JavaScript">JavaScript</option>
+                        <option value="Python">Python</option>
+                        <option value="HTML/CSS">HTML/CSS</option>
+                        <option value="TypeScript">TypeScript</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">កូដគំរូ (Sample Code)</label>
+                    <textarea id="newRepoCode" rows="4" placeholder="ដាក់កូដរបស់អ្នកនៅទីនេះ..." class="w-full bg-[#0b0f19] border border-gray-700 rounded-xl px-3.5 py-2 text-xs font-mono text-cyan-300 focus:outline-none focus:border-blue-500"></textarea>
+                </div>
+                <div class="pt-2 flex justify-end space-x-2">
+                    <button type="button" onclick="closeCreateModal()" class="px-4 py-2 rounded-xl text-xs text-gray-400 hover:bg-gray-800">បោះបង់</button>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium px-5 py-2 rounded-xl">រក្សាទុក Repo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-800/80 py-6 text-center text-xs text-gray-500 mt-12">
+        <p>© 2026 MiniGit Hub — រចនាប័ទ្មបែប Digital Store សម្រាប់អ្នកសរសេរកូដ។</p>
+    </footer>
+
+    <!-- JavaScript សម្រាប់គ្រប់គ្រងទិន្នន័យ និងមុខងារ -->
     <script>
-        // ទិន្នន័យកញ្ចប់ Topup របស់ Mobile KH
-        const products = [
-            { id: 1, name: '86 Diamonds', price: 1.00, icon: '💎' },
-            { id: 2, name: '172 Diamonds', price: 2.00, icon: '💎' },
-            { id: 3, name: '257 Diamonds', price: 3.00, icon: '💎' },
-            { id: 4, name: '706 Diamonds', price: 8.00, icon: '💎' },
-            { id: 5, name: 'Weekly Pass', price: 1.80, icon: '🎟️' },
-            { id: 6, name: 'Twilight Pass', price: 9.50, icon: '🌟' }
+        // ទិន្នន័យគំរូនៃ Repositories
+        let repositories = [
+            {
+                id: 1,
+                name: "cisky-store-template",
+                description: "គំរូគេហទំព័រលក់ទំនិញឌីជីថល និងហ្គេមបែបទំនើប មានប្រព័ន្ធកន្ត្រកទំនិញ និង Dark UI ស្រាប់។",
+                language: "HTML/CSS",
+                langColor: "bg-orange-500",
+                stars: 128,
+                forks: 34,
+                updated: "2 ម៉ោងមុន",
+                badge: "ពេញនិយម 🔥",
+                fileName: "index.html",
+                code: `<div class="store-card">\n  <h3>VIP Game Pass</h3>\n  <button class="buy-btn">ទិញឥឡូវនេះ</button>\n</div>`
+            },
+            {
+                id: 2,
+                name: "khqr-payment-gateway",
+                description: "បណ្ណាល័យកូដសម្រាប់ភ្ជាប់ប្រព័ន្ធទូទាត់ប្រាក់តាមរយៈ QR Code ដោយស្វ័យប្រវត្តិសម្រាប់វេបសាយ។",
+                language: "JavaScript",
+                langColor: "bg-yellow-400",
+                stars: 245,
+                forks: 62,
+                updated: "1 ថ្ងៃមុន",
+                badge: "Verified ✓",
+                fileName: "payment.js",
+                code: `async function generateQR(amount) {\n  const res = await fetch('/api/khqr', { method: 'POST', body: JSON.stringify({ amount }) });\n  return await res.json();\n}`
+            },
+            {
+                id: 3,
+                name: "telegram-auto-delivery-bot",
+                description: "Bot សម្រាប់ផ្ញើទំនិញឌីជីថល ឬកូដទៅកាន់អតិថិជនដោយស្វ័យប្រវត្តិបន្ទាប់ពីបង់ប្រាក់រួចរាល់។",
+                language: "Python",
+                langColor: "bg-blue-500",
+                stars: 189,
+                forks: 41,
+                updated: "3 ថ្ងៃមុន",
+                badge: "Bot Script",
+                fileName: "bot.py",
+                code: `import telebot\nbot = telebot.TeleBot("YOUR_TOKEN")\n\n@bot.message_handler(commands=['start'])\ndef send_welcome(message):\n    bot.reply_to(message, "សួស្ដី! សូមស្វាគមន៍មកកាន់ហាងយើងខ្ញុំ។")`
+            },
+            {
+                id: 4,
+                name: "nextjs-dashboard-ui",
+                description: "ផ្ទាំងគ្រប់គ្រងទិន្នន័យ (Admin Dashboard) សម្រាប់មើលរបាយការណ៍លក់ និងគ្រប់គ្រងអ្នកប្រើប្រាស់។",
+                language: "TypeScript",
+                langColor: "bg-cyan-400",
+                stars: 95,
+                forks: 19,
+                updated: "5 ថ្ងៃមុន",
+                badge: "UI Kit",
+                fileName: "Dashboard.tsx",
+                code: `export default function Dashboard() {\n  return <div className="p-6 bg-slate-900 text-white">ស្ថិតិអ្នកប្រើប្រាស់</div>;\n}`
+            },
+            {
+                id: 5,
+                name: "discord-verify-system",
+                description: "ប្រព័ន្ធផ្ទៀងផ្ទាត់សមាជិកថ្មីនៅក្នុង Discord Server ជាមួយនឹងប៊ូតុងចុចដ៏ស្រស់ស្អាត។",
+                language: "JavaScript",
+                langColor: "bg-yellow-400",
+                stars: 76,
+                forks: 15,
+                updated: "1 សប្ដាហ៍មុន",
+                badge: "Open Source",
+                fileName: "verify.js",
+                code: `client.on('interactionCreate', async interaction => {\n  if (interaction.customId === 'verify_btn') {\n    await interaction.reply({ content: 'អ្នកត្រូវបានផ្ទៀងផ្ទាត់!', ephemeral: true });\n  }\n});`
+            },
+            {
+                id: 6,
+                name: "stock-checker-scraper",
+                description: "ស្គ្រីបសម្រាប់ត្រួតពិនិត្យចំនួនស្តុកទំនិញនៅលើវេបសាយ និងផ្ដល់ដំណឹងភ្លាមៗពេលមានទំនិញថ្មី។",
+                language: "Python",
+                langColor: "bg-blue-500",
+                stars: 64,
+                forks: 12,
+                updated: "2 សប្ដាហ៍មុន",
+                badge: "Automation",
+                fileName: "scraper.py",
+                code: `import requests\nfrom bs4 import BeautifulSoup\n\nres = requests.get('https://example.com/shop')\nsoup = BeautifulSoup(res.text, 'html.parser')\nprint("កំពុងពិនិត្យស្តុក...")`
+            }
         ];
 
-        let cart = [];
+        let currentCategory = 'ALL';
 
-        // បង្ហាញបញ្ជី Package
-        function renderMenu() {
-            const packageView = document.getElementById('packageView');
-            packageView.innerHTML = '';
-            products.forEach(p => {
-                packageView.innerHTML += `
-                    <div class="package-item">
-                        <div class="pkg-icon">${p.icon}</div>
-                        <h3 class="pkg-title">${p.name}</h3>
-                        <div class="pkg-price">$${p.price.toFixed(2)}</div>
-                        <button class="btn-3d" onclick="addToCart(${p.id})">បន្ថែម +</button>
+        // អនុគមន៍សម្រាប់បង្ហាញកាត Repositories
+        function renderRepos(list) {
+            const grid = document.getElementById('repoGrid');
+            document.getElementById('totalReposCount').innerText = list.length;
+            grid.innerHTML = '';
+
+            if (list.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-gray-500">មិនមាន Repository ដែលត្រូវនឹងការស្វែងរកនោះទេ។</div>`;
+                return;
+            }
+
+            list.forEach(repo => {
+                const card = document.createElement('div');
+                card.className = 'repo-card rounded-2xl p-5 flex flex-col justify-between cursor-pointer';
+                card.onclick = () => openModal(repo);
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-start gap-2 mb-3">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+                                    <i class="fa-solid fa-code-branch text-sm"></i>
+                                </div>
+                                <h3 class="font-bold text-white hover:text-blue-400 transition text-base truncate">${repo.name}</h3>
+                            </div>
+                            <span class="text-[11px] bg-blue-500/15 text-blue-300 border border-blue-500/30 px-2.5 py-0.5 rounded-full shrink-0">${repo.badge}</span>
+                        </div>
+                        <p class="text-gray-400 text-xs leading-relaxed line-clamp-2 mb-4">${repo.description}</p>
+                    </div>
+
+                    <div>
+                        <div class="flex items-center justify-between text-xs text-gray-400 pt-3 border-t border-gray-800/80">
+                            <div class="flex items-center space-x-4">
+                                <span class="flex items-center space-x-1.5">
+                                    <span class="w-2.5 h-2.5 rounded-full ${repo.langColor}"></span>
+                                    <span>${repo.language}</span>
+                                </span>
+                                <span class="flex items-center space-x-1 hover:text-yellow-400">
+                                    <i class="fa-regular fa-star"></i>
+                                    <span>${repo.stars}</span>
+                                </span>
+                                <span class="flex items-center space-x-1">
+                                    <i class="fa-solid fa-code-fork"></i>
+                                    <span>${repo.forks}</span>
+                                </span>
+                            </div>
+                            <span class="text-[11px] text-gray-500">${repo.updated}</span>
+                        </div>
+                        
+                        <button class="mt-3 w-full bg-[#1e293b] hover:bg-blue-600 text-gray-200 hover:text-white text-xs font-medium py-2 rounded-xl transition flex items-center justify-center space-x-1.5">
+                            <i class="fa-solid fa-eye"></i>
+                            <span>មើលកូដ & ទាញយក</span>
+                        </button>
                     </div>
                 `;
+                grid.appendChild(card);
             });
         }
 
-        // ការបញ្ជាផ្លាស់ប្តូរទំព័រ (Navigation)
-        function showPackages() {
-            document.getElementById('homeView').style.display = 'none';
-            document.getElementById('packageView').style.display = 'grid';
-            document.getElementById('backBtn').style.display = 'block';
+        // មុខងារស្វែងរក និងចម្រាញ់តាមប្រភេទ
+        function filterRepos() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = repositories.filter(repo => {
+                const matchesCategory = currentCategory === 'ALL' || repo.language === currentCategory;
+                const matchesSearch = repo.name.toLowerCase().includes(query) || 
+                                      repo.description.toLowerCase().includes(query) ||
+                                      repo.language.toLowerCase().includes(query);
+                return matchesCategory && matchesSearch;
+            });
+            renderRepos(filtered);
         }
 
-        function goBack() {
-            document.getElementById('packageView').style.display = 'none';
-            document.getElementById('homeView').style.display = 'flex';
-            document.getElementById('backBtn').style.display = 'none';
+        function setCategory(cat, btnElement) {
+            currentCategory = cat;
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                btn.classList.remove('bg-blue-600', 'text-white');
+                btn.classList.add('bg-[#151c2c]', 'text-gray-300');
+            });
+            btnElement.classList.remove('bg-[#151c2c]', 'text-gray-300');
+            btnElement.classList.add('bg-blue-600', 'text-white');
+            filterRepos();
         }
 
-        // មុខងារកន្ត្រក
-        function addToCart(id) {
-            const product = products.find(p => p.id === id);
-            cart.push(product);
-            updateCartUI();
-        }
-
-        function updateCartUI() {
-            const cartBar = document.getElementById('cartBar');
-            document.getElementById('cartCount').innerText = cart.length;
+        // មុខងារបើក/បិទ Modal មើលកូដ
+        function openModal(repo) {
+            document.getElementById('modalTitle').innerText = repo.name;
+            document.getElementById('modalBadge').innerText = repo.language;
+            document.getElementById('modalDesc').innerText = repo.description;
+            document.getElementById('modalFileName').innerHTML = `<i class="fa-regular fa-file-code mr-1"></i> ${repo.fileName}`;
+            document.getElementById('modalCodeSample').innerText = repo.code;
+            document.getElementById('modalCloneUrl').value = `https://minigit.hub/user/${repo.name}.git`;
             
-            const total = cart.reduce((sum, item) => sum + item.price, 0);
-            document.getElementById('totalPrice').innerText = `$${total.toFixed(2)}`;
-
-            if(cart.length > 0) {
-                cartBar.classList.add('show');
-            } else {
-                cartBar.classList.remove('show');
-            }
+            const modal = document.getElementById('codeModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
         }
 
-        function checkout() {
-            if(cart.length === 0) return;
-            const total = cart.reduce((sum, item) => sum + item.price, 0);
-            alert(`✅ ការបញ្ជាទិញទទួលបានជោគជ័យ!\nសរុបទឹកប្រាក់: $${total.toFixed(2)}\n\nសូមផ្ញើវិក្កយបត្រនេះទៅកាន់ Admin តាមរយៈ Telegram!`);
-            
-            cart = [];
-            updateCartUI();
+        function closeModal() {
+            const modal = document.getElementById('codeModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
         }
 
-        // ដំឡើងទិន្នន័យដំបូង
-        renderMenu();
+        function copyCode() {
+            const code = document.getElementById('modalCodeSample').innerText;
+            navigator.clipboard.writeText(code);
+            const btnText = document.getElementById('copyBtnText');
+            btnText.innerText = "បានចម្លង! ✓";
+            setTimeout(() => { btnText.innerText = "ចម្លងកូដ (Copy)"; }, 2000);
+        }
+
+        // មុខងារបង្កើត Repository ថ្មី
+        function openCreateModal() {
+            const modal = document.getElementById('createModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeCreateModal() {
+            const modal = document.getElementById('createModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function addNewRepo(e) {
+            e.preventDefault();
+            const name = document.getElementById('newRepoName').value.trim().replace(/\s+/g, '-').toLowerCase();
+            const desc = document.getElementById('newRepoDesc').value;
+            const lang = document.getElementById('newRepoLang').value;
+            const code = document.getElementById('newRepoCode').value || "// កូដគំរូមិនទាន់បានបញ្ចូល";
+
+            const colors = {
+                'JavaScript': 'bg-yellow-400',
+                'Python': 'bg-blue-500',
+                'HTML/CSS': 'bg-orange-500',
+                'TypeScript': 'bg-cyan-400'
+            };
+
+            const newRepo = {
+                id: repositories.length + 1,
+                name: name,
+                description: desc,
+                language: lang,
+                langColor: colors[lang] || 'bg-gray-400',
+                stars: 1,
+                forks: 0,
+                updated: "អម្បាញ់មិញនេះ",
+                badge: "ថ្មី ✨",
+                fileName: "index.code",
+                code: code
+            };
+
+            repositories.unshift(newRepo);
+            filterRepos();
+            closeCreateModal();
+            e.target.reset();
+        }
+
+        // ចាប់ផ្ដើមបង្ហាញទិន្នន័យដំបូង
+        renderRepos(repositories);
     </script>
 </body>
 </html>
