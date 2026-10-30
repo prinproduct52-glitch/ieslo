@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MiniGit - បង្កើត និងស៊ែរ Mini App</title>
+    <title>MiniGit - App Studio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- បណ្ណាល័យសម្រាប់បង្រួមកូដទៅជា Link ខ្លី និងមានសុវត្ថិភាព -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
     
     <script>
@@ -45,134 +44,148 @@
 </head>
 <body class="min-h-screen flex flex-col font-sans">
 
-    <!-- ផ្ទាំងជូនដំណឹងពេលចម្លង Link (Toast Notification) -->
-    <div id="toast" class="fixed bottom-5 right-5 bg-emerald-600 text-white text-xs font-medium px-4 py-3 rounded-xl shadow-xl hidden items-center space-x-2 z-50 transition-all">
-        <i class="fa-solid fa-circle-check text-sm"></i>
-        <span id="toastMsg">បានចម្លង Link សម្រាប់ស៊ែរ!</span>
+    <!-- ========================================== -->
+    <!-- ១. ផ្ទាំងសម្រាប់អ្នកចូលតាម LINK ស៊ែរ (ឃើញតែ MINI APP ១០០%) -->
+    <!-- ========================================== -->
+    <div id="sharedViewerContainer" class="fixed inset-0 w-screen h-screen bg-white z-[100] hidden">
+        <iframe id="sharedFullIframe" class="w-full h-full border-0" sandbox="allow-scripts allow-forms allow-modals allow-popups"></iframe>
     </div>
 
-    <!-- របារខាងលើ (Navbar) -->
-    <nav class="glass-nav sticky top-0 z-40 px-4 py-3.5">
-        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-3">
-            <div class="flex items-center space-x-2.5 cursor-pointer" onclick="window.location.hash=''; location.reload();">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center shadow-lg shadow-blue-500/30">
-                    <i class="fa-brands fa-github-alt text-white text-xl"></i>
-                </div>
-                <div>
-                    <span class="text-lg font-bold text-white">MiniGit</span>
-                    <span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded-full ml-1">APP STUDIO</span>
-                </div>
-            </div>
+    <!-- ========================================== -->
+    <!-- ២. ផ្ទាំង STUDIO ដើមសម្រាប់អ្នកបង្កើត (OWNER) -->
+    <!-- ========================================== -->
+    <div id="studioWorkspace" class="min-h-screen flex flex-col">
 
-            <div class="relative flex-1 max-w-xs">
-                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-2.5 text-gray-400 text-xs"></i>
-                <input type="text" id="searchInput" onkeyup="filterApps()" placeholder="ស្វែងរក Mini App..." 
-                    class="w-full bg-[#1e293b]/80 border border-gray-700 rounded-xl pl-9 pr-3 py-1.5 text-xs text-white placeholder-gray-400 focus:outline-none focus:border-blue-500">
-            </div>
-
-            <div class="flex items-center space-x-2 w-full sm:w-auto justify-between sm:justify-end">
-                <button onclick="openCreateModal()" class="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-xs font-medium px-4 py-2.5 rounded-xl shadow-lg shadow-blue-600/20 flex items-center space-x-1.5 transition">
-                    <i class="fa-solid fa-plus"></i>
-                    <span>បង្កើត Mini App ថ្មី</span>
-                </button>
-                <button onclick="clearAllApps()" id="clearAllBtn" class="hidden bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 text-xs px-3 py-2.5 rounded-xl transition" title="លុបទាំងអស់">
-                    <i class="fa-solid fa-trash-can"></i>
-                </button>
-            </div>
+        <!-- ផ្ទាំងជូនដំណឹងពេលចម្លង Link -->
+        <div id="toast" class="fixed bottom-5 right-5 bg-emerald-600 text-white text-xs font-medium px-4 py-3 rounded-xl shadow-xl hidden items-center space-x-2 z-50 transition-all">
+            <i class="fa-solid fa-circle-check text-sm"></i>
+            <span id="toastMsg">បានចម្លង Link សម្រាប់ស៊ែរ!</span>
         </div>
-    </nav>
 
-    <!-- បញ្ជី Mini Apps -->
-    <main class="max-w-7xl mx-auto w-full px-4 py-6 flex-1">
-        <div id="appGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <!-- Mini Apps នឹងបង្ហាញនៅទីនេះ -->
-        </div>
-    </main>
-
-    <!-- ផ្ទាំងបង្កើត Mini App ថ្មី -->
-    <div id="createModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-[#151c2c] border border-gray-700 rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl">
-            <div class="flex justify-between items-center px-5 py-4 border-b border-gray-800">
-                <h3 class="font-bold text-base text-white flex items-center space-x-2">
-                    <i class="fa-solid fa-wand-magic-sparkles text-blue-400"></i>
-                    <span>បង្កើត Mini App ថ្មី</span>
-                </h3>
-                <button onclick="closeCreateModal()" class="text-gray-400 hover:text-white">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
-            </div>
-            <form onsubmit="saveMiniApp(event)" class="p-5 space-y-4 max-h-[80vh] overflow-y-auto">
-                <div>
-                    <label class="block text-xs text-gray-400 mb-1">ឈ្មោះ Mini App *</label>
-                    <input type="text" id="appName" required placeholder="ឧ. ម៉ាស៊ីនគិតលេខ, ហ្គេមខ្លី..." class="w-full bg-[#0b0f19] border border-gray-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
-                </div>
-                <div>
-                    <label class="block text-xs text-gray-400 mb-1">ការពិពណ៌នាខ្លី *</label>
-                    <input type="text" id="appDesc" required placeholder="រៀបរាប់ខ្លីៗពីមុខងាររបស់ App..." class="w-full bg-[#0b0f19] border border-gray-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
-                </div>
-                <div>
-                    <div class="flex justify-between items-center mb-1">
-                        <label class="text-xs text-gray-400">កូដកម្មវិធី (HTML / CSS / JS) *</label>
-                        <button type="button" onclick="insertTemplate()" class="text-[11px] text-blue-400 hover:underline">
-                            + ដាក់កូដគំរូសាកល្បង
-                        </button>
+        <!-- របារខាងលើ (Navbar) -->
+        <nav class="glass-nav sticky top-0 z-40 px-4 py-3.5">
+            <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-3">
+                <div class="flex items-center space-x-2.5 cursor-pointer" onclick="window.location.hash=''; location.reload();">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center shadow-lg shadow-blue-500/30">
+                        <i class="fa-brands fa-github-alt text-white text-xl"></i>
                     </div>
-                    <textarea id="appCode" required rows="8" placeholder="សរសេរ ឬ Paste កូដ HTML/CSS/JS នៅទីនេះ..." class="w-full bg-[#0b0f19] border border-gray-700 rounded-xl p-3 text-xs font-mono text-cyan-300 focus:outline-none focus:border-blue-500"></textarea>
+                    <div>
+                        <span class="text-lg font-bold text-white">MiniGit</span>
+                        <span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded-full ml-1">ORIGINAL STUDIO</span>
+                    </div>
                 </div>
-                <div class="pt-2 flex justify-end space-x-2">
-                    <button type="button" onclick="closeCreateModal()" class="px-4 py-2 rounded-xl text-xs text-gray-400 hover:bg-gray-800">បោះបង់</button>
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium px-5 py-2 rounded-xl shadow-lg shadow-blue-600/30">បង្កើត និងរក្សាទុក</button>
-                </div>
-            </form>
-        </div>
-    </div>
 
-    <!-- ផ្ទាំងដំណើរការ Mini App និងមើលកូដ (Runner & Share Modal) -->
-    <div id="runnerModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-3 sm:p-6">
-        <div class="bg-[#151c2c] border border-gray-700 rounded-2xl max-w-4xl w-full h-[85vh] flex flex-col overflow-hidden shadow-2xl">
-            <div class="flex flex-wrap justify-between items-center gap-2 px-4 py-3 border-b border-gray-800 bg-[#0f172a]">
-                <div class="flex items-center space-x-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse"></span>
-                    <h3 id="runnerTitle" class="font-bold text-sm text-white truncate max-w-[160px] sm:max-w-xs">ឈ្មោះ App</h3>
+                <div class="relative flex-1 max-w-xs">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-2.5 text-gray-400 text-xs"></i>
+                    <input type="text" id="searchInput" onkeyup="filterApps()" placeholder="ស្វែងរក Mini App..." 
+                        class="w-full bg-[#1e293b]/80 border border-gray-700 rounded-xl pl-9 pr-3 py-1.5 text-xs text-white placeholder-gray-400 focus:outline-none focus:border-blue-500">
                 </div>
-                
-                <div class="flex items-center space-x-2">
-                    <!-- ប៊ូតុងស៊ែរ Link ក្នុងផ្ទាំងដំណើរការ -->
-                    <button onclick="shareCurrentApp()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium px-3 py-1.5 rounded-xl flex items-center space-x-1.5 transition shadow-lg shadow-emerald-600/20">
-                        <i class="fa-solid fa-share-nodes"></i>
-                        <span>ស៊ែរ Link</span>
+
+                <div class="flex items-center space-x-2 w-full sm:w-auto justify-between sm:justify-end">
+                    <button onclick="openCreateModal()" class="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-xs font-medium px-4 py-2.5 rounded-xl shadow-lg shadow-blue-600/20 flex items-center space-x-1.5 transition">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>បង្កើត Mini App ថ្មី</span>
                     </button>
-
-                    <div class="bg-[#1e293b] p-1 rounded-xl flex space-x-1">
-                        <button onclick="switchTab('preview')" id="tabPreviewBtn" class="px-2.5 py-1 rounded-lg text-xs font-medium bg-blue-600 text-white transition">
-                            <i class="fa-solid fa-play mr-1"></i> App
-                        </button>
-                        <button onclick="switchTab('code')" id="tabCodeBtn" class="px-2.5 py-1 rounded-lg text-xs font-medium text-gray-400 hover:text-white transition">
-                            <i class="fa-solid fa-code mr-1"></i> កូដ
-                        </button>
-                    </div>
-                    <button onclick="closeRunnerModal()" class="text-gray-400 hover:text-white px-1.5">
-                        <i class="fa-solid fa-xmark text-xl"></i>
+                    <button onclick="clearAllApps()" id="clearAllBtn" class="hidden bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 text-xs px-3 py-2.5 rounded-xl transition" title="លុបទាំងអស់">
+                        <i class="fa-solid fa-trash-can"></i>
                     </button>
                 </div>
             </div>
+        </nav>
 
-            <div id="previewPane" class="flex-1 bg-white w-full h-full relative">
-                <iframe id="appIframe" class="w-full h-full border-0" sandbox="allow-scripts allow-forms allow-modals"></iframe>
+        <!-- បញ្ជី Mini Apps របស់អ្នកបង្កើត -->
+        <main class="max-w-7xl mx-auto w-full px-4 py-6 flex-1">
+            <div id="appGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Mini Apps នឹងបង្ហាញនៅទីនេះ -->
             </div>
+        </main>
 
-            <div id="codePane" class="hidden flex-1 bg-[#0b0f19] p-4 overflow-y-auto flex-col justify-between">
-                <div>
-                    <div class="flex justify-between items-center mb-2 pb-2 border-b border-gray-800">
-                        <span class="text-xs text-gray-400 font-mono">index.html</span>
-                        <button onclick="copyAppCode()" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-200 px-3 py-1 rounded-lg">
-                            <i class="fa-regular fa-copy mr-1"></i> <span id="copyText">ចម្លងកូដ</span>
+        <!-- ផ្ទាំងបង្កើត ឬកែប្រែ Mini App -->
+        <div id="createModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+            <div class="bg-[#151c2c] border border-gray-700 rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl">
+                <div class="flex justify-between items-center px-5 py-4 border-b border-gray-800">
+                    <h3 id="formModalTitle" class="font-bold text-base text-white flex items-center space-x-2">
+                        <i class="fa-solid fa-wand-magic-sparkles text-blue-400"></i>
+                        <span>បង្កើត Mini App ថ្មី</span>
+                    </h3>
+                    <button onclick="closeCreateModal()" class="text-gray-400 hover:text-white">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+                <form onsubmit="saveMiniApp(event)" class="p-5 space-y-4 max-h-[80vh] overflow-y-auto">
+                    <input type="hidden" id="editAppId" value="">
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">ឈ្មោះ Mini App *</label>
+                        <input type="text" id="appName" required placeholder="ឧ. KAISENTZ TOPUP..." class="w-full bg-[#0b0f19] border border-gray-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">ការពិពណ៌នាខ្លី *</label>
+                        <input type="text" id="appDesc" required placeholder="រៀបរាប់ខ្លីៗពីមុខងាររបស់ App..." class="w-full bg-[#0b0f19] border border-gray-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="text-xs text-gray-400">កូដកម្មវិធី (HTML / CSS / JS) *</label>
+                            <button type="button" onclick="insertTemplate()" class="text-[11px] text-blue-400 hover:underline">
+                                + ដាក់កូដគំរូសាកល្បង
+                            </button>
+                        </div>
+                        <textarea id="appCode" required rows="8" placeholder="សរសេរ ឬ Paste កូដ HTML/CSS/JS នៅទីនេះ..." class="w-full bg-[#0b0f19] border border-gray-700 rounded-xl p-3 text-xs font-mono text-cyan-300 focus:outline-none focus:border-blue-500"></textarea>
+                    </div>
+                    <div class="pt-2 flex justify-end space-x-2">
+                        <button type="button" onclick="closeCreateModal()" class="px-4 py-2 rounded-xl text-xs text-gray-400 hover:bg-gray-800">បោះបង់</button>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium px-5 py-2 rounded-xl shadow-lg shadow-blue-600/30">រក្សាទុក Mini App</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ផ្ទាំងសាកល្បង និងមើលកូដសម្រាប់តែអ្នកបង្កើត (Owner Runner Modal) -->
+        <div id="runnerModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-3 sm:p-6">
+            <div class="bg-[#151c2c] border border-gray-700 rounded-2xl max-w-4xl w-full h-[88vh] flex flex-col overflow-hidden shadow-2xl">
+                <div class="flex flex-wrap justify-between items-center gap-2 px-4 py-3 border-b border-gray-800 bg-[#0f172a]">
+                    <div class="flex items-center space-x-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse"></span>
+                        <h3 id="runnerTitle" class="font-bold text-sm text-white truncate max-w-[140px] sm:max-w-xs">ឈ្មោះ App</h3>
+                    </div>
+                    
+                    <div class="flex items-center space-x-2">
+                        <button onclick="shareCurrentApp()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium px-3 py-1.5 rounded-xl flex items-center space-x-1.5 transition shadow-lg shadow-emerald-600/20">
+                            <i class="fa-solid fa-share-nodes"></i>
+                            <span>ស៊ែរ Link (សម្រាប់ភ្ញៀវ)</span>
+                        </button>
+
+                        <div class="bg-[#1e293b] p-1 rounded-xl flex space-x-1">
+                            <button onclick="switchTab('preview')" id="tabPreviewBtn" class="px-2.5 py-1 rounded-lg text-xs font-medium bg-blue-600 text-white transition">
+                                <i class="fa-solid fa-play mr-1"></i> App
+                            </button>
+                            <button onclick="switchTab('code')" id="tabCodeBtn" class="px-2.5 py-1 rounded-lg text-xs font-medium text-gray-400 hover:text-white transition">
+                                <i class="fa-solid fa-code mr-1"></i> កូដ
+                            </button>
+                        </div>
+                        <button onclick="closeRunnerModal()" class="text-gray-400 hover:text-white px-1.5">
+                            <i class="fa-solid fa-xmark text-xl"></i>
                         </button>
                     </div>
-                    <pre class="text-xs font-mono text-cyan-300 overflow-x-auto whitespace-pre-wrap"><code id="runnerCodeDisplay"></code></pre>
+                </div>
+
+                <div id="previewPane" class="flex-1 bg-white w-full h-full relative">
+                    <iframe id="appIframe" class="w-full h-full border-0" sandbox="allow-scripts allow-forms allow-modals allow-popups"></iframe>
+                </div>
+
+                <div id="codePane" class="hidden flex-1 bg-[#0b0f19] p-4 overflow-y-auto flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-2 pb-2 border-b border-gray-800">
+                            <span class="text-xs text-gray-400 font-mono">index.html (សម្រាប់តែអ្នកបង្កើត)</span>
+                            <button onclick="copyAppCode()" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-200 px-3 py-1 rounded-lg">
+                                <i class="fa-regular fa-copy mr-1"></i> <span id="copyText">ចម្លងកូដ</span>
+                            </button>
+                        </div>
+                        <pre class="text-xs font-mono text-cyan-300 overflow-x-auto whitespace-pre-wrap"><code id="runnerCodeDisplay"></code></pre>
+                    </div>
                 </div>
             </div>
         </div>
+
     </div>
 
     <script>
@@ -194,11 +207,10 @@
             }, 3000);
         }
 
-        // បង្កើត Link សម្រាប់ចែករំលែក (Share Link Generator)
+        // បង្កើត Link សម្រាប់ចែករំលែក (ពេលគេចូល គឺឃើញតែ Mini App សុទ្ធ)
         function generateShareLink(app) {
             const payload = JSON.stringify({
                 n: app.name,
-                d: app.description,
                 c: app.code
             });
             const compressed = LZString.compressToEncodedURIComponent(payload);
@@ -206,7 +218,6 @@
             return `${baseUrl}#app=${compressed}`;
         }
 
-        // មុខងារចុចស៊ែរពីលើកាត ឬក្នុងផ្ទាំង App
         async function shareAppById(id) {
             const app = miniApps.find(a => a.id === id);
             if (!app) return;
@@ -220,27 +231,21 @@
 
         async function copyOrNativeShare(app) {
             const shareUrl = generateShareLink(app);
-            
-            // ប្រសិនបើបើកលើទូរសព្ទដែលគាំទ្រផ្ទាំង Share ផ្ទាល់ (ដូចជា Telegram, Messenger)
             if (navigator.share) {
                 try {
                     await navigator.share({
-                        title: `Mini App: ${app.name}`,
-                        text: app.description,
+                        title: app.name,
                         url: shareUrl
                     });
                     return;
-                } catch (err) {
-                    // បើអ្នកប្រើបិទផ្ទាំង Share វានឹងចម្លង Link ជំនួសវិញ
-                }
+                } catch (err) {}
             }
-
             navigator.clipboard.writeText(shareUrl);
-            showToast("បានចម្លង Link! អ្នកអាច Paste ផ្ញើឱ្យមិត្តភក្តិបានហើយ។");
+            showToast("បានចម្លង Link! ពេលគេចុចចូល នឹងឃើញតែ Mini App ប៉ុណ្ណោះ។");
         }
 
-        // ត្រួតពិនិត្យមើលថាតើអ្នកប្រើបើកតាមរយៈ Link ស៊ែរឬអត់
-        function checkSharedUrlOnLoad() {
+        // មុខងារសំខាន់៖ ត្រួតពិនិត្យថាជាភ្ញៀវចូលតាម Link ស៊ែរ ឬជាម្ចាស់វេបសាយដើម
+        function checkModeOnLoad() {
             const hash = window.location.hash;
             if (hash.startsWith('#app=')) {
                 try {
@@ -249,29 +254,30 @@
                     if (jsonStr) {
                         const sharedData = JSON.parse(jsonStr);
                         
-                        // ពិនិត្យមើលថាតើមាន App នេះក្នុងបញ្ជីហើយឬនៅ បើមិនទាន់មានទេ រក្សាទុកចូលបញ្ជីតែម្ដង
-                        let existing = miniApps.find(a => a.name === sharedData.n && a.code === sharedData.c);
-                        if (!existing) {
-                            existing = {
-                                id: Date.now(),
-                                name: sharedData.n,
-                                description: sharedData.d,
-                                code: sharedData.c,
-                                createdAt: "បានទទួលពីការស៊ែរ 🔗"
-                            };
-                            miniApps.unshift(existing);
-                            saveToStorage();
-                        }
-
-                        renderApps();
-                        launchApp(existing.id, 'preview');
-                        showToast(`កំពុងបើកដំណើរការ "${existing.name}"`);
+                        // ១. លាក់ផ្ទាំង Studio និងកន្លែងមើលកូដទាំងអស់
+                        document.getElementById('studioWorkspace').classList.add('hidden');
+                        
+                        // ២. បើកបង្ហាញតែតួ Mini App ពេញអេក្រង់ ១០០%
+                        const viewer = document.getElementById('sharedViewerContainer');
+                        viewer.classList.remove('hidden');
+                        
+                        document.title = sharedData.n || "Mini App";
+                        document.getElementById('sharedFullIframe').srcdoc = sharedData.c;
+                        return;
                     }
                 } catch (e) {
                     console.error("Link មិនត្រឹមត្រូវ", e);
                 }
             }
+
+            // បើគ្មាន #app= ទេ គឺបង្ហាញផ្ទាំង Original Studio សម្រាប់អ្នកបង្កើតធម្មតា
+            document.getElementById('sharedViewerContainer').classList.add('hidden');
+            document.getElementById('studioWorkspace').classList.remove('hidden');
+            renderApps();
         }
+
+        // ចាប់សញ្ញាពេលមានការប្ដូរ URL Hash
+        window.addEventListener('hashchange', checkModeOnLoad);
 
         function renderApps(list = miniApps) {
             const grid = document.getElementById('appGrid');
@@ -291,7 +297,7 @@
                             <i class="fa-solid fa-cubes"></i>
                         </div>
                         <h3 class="text-base font-bold text-white mb-1">មិនទាន់មាន Mini App នៅឡើយទេ</h3>
-                        <p class="text-xs text-gray-400 max-w-sm mb-5">បង្កើត Mini App ផ្ទាល់ខ្លួនរបស់អ្នក រួចចុចប៊ូតុង Share ដើម្បីផ្ញើ Link ឱ្យមិត្តភក្តិប្រើប្រាស់!</p>
+                        <p class="text-xs text-gray-400 max-w-sm mb-5">បង្កើត Mini App នៅទីនេះ។ ពេលអ្នកស៊ែរ Link ឱ្យគេ គេនឹងឃើញតែកម្មវិធីសុទ្ធ មិនឃើញកន្លែងកូដឡើយ!</p>
                         <button onclick="openCreateModal()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium px-5 py-2.5 rounded-xl shadow-lg shadow-blue-600/20 flex items-center space-x-2 transition">
                             <i class="fa-solid fa-plus"></i>
                             <span>បង្កើត Mini App ដំបូង</span>
@@ -316,9 +322,14 @@
                                     <span class="text-[10px] text-gray-500">${app.createdAt}</span>
                                 </div>
                             </div>
-                            <button onclick="deleteApp(${app.id})" class="text-gray-500 hover:text-red-400 p-1.5 transition" title="លុប App នេះ">
-                                <i class="fa-regular fa-trash-can text-xs"></i>
-                            </button>
+                            <div class="flex items-center space-x-1">
+                                <button onclick="editApp(${app.id})" class="text-gray-400 hover:text-blue-400 p-1.5 transition" title="កែប្រែកូដ">
+                                    <i class="fa-regular fa-pen-to-square text-xs"></i>
+                                </button>
+                                <button onclick="deleteApp(${app.id})" class="text-gray-500 hover:text-red-400 p-1.5 transition" title="លុប App នេះ">
+                                    <i class="fa-regular fa-trash-can text-xs"></i>
+                                </button>
+                            </div>
                         </div>
                         <p class="text-gray-400 text-xs leading-relaxed mb-5">${app.description}</p>
                     </div>
@@ -326,11 +337,11 @@
                     <div class="flex space-x-2 pt-3 border-t border-gray-800/80">
                         <button onclick="launchApp(${app.id}, 'preview')" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium py-2.5 rounded-xl transition flex items-center justify-center space-x-1.5 shadow-lg shadow-blue-600/20">
                             <i class="fa-solid fa-play text-[10px]"></i>
-                            <span>បើក App</span>
+                            <span>សាកល្បង</span>
                         </button>
-                        <button onclick="shareAppById(${app.id})" class="bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-emerald-500/30 text-xs font-medium px-3.5 py-2.5 rounded-xl transition flex items-center space-x-1" title="ស៊ែរ Link ឱ្យមិត្តភក្តិ">
+                        <button onclick="shareAppById(${app.id})" class="bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-emerald-500/30 text-xs font-medium px-3.5 py-2.5 rounded-xl transition flex items-center space-x-1" title="ស៊ែរ Link ឱ្យភ្ញៀវប្រើ (អត់ឃើញកូដ)">
                             <i class="fa-solid fa-share-nodes"></i>
-                            <span>ស៊ែរ</span>
+                            <span>ស៊ែរ Link</span>
                         </button>
                         <button onclick="launchApp(${app.id}, 'code')" class="bg-[#1e293b] hover:bg-gray-700 text-gray-300 text-xs font-medium px-3 py-2.5 rounded-xl transition" title="មើលកូដ">
                             <i class="fa-solid fa-code"></i>
@@ -343,51 +354,81 @@
 
         function saveMiniApp(e) {
             e.preventDefault();
+            const editId = document.getElementById('editAppId').value;
             const name = document.getElementById('appName').value.trim();
             const desc = document.getElementById('appDesc').value.trim();
             const code = document.getElementById('appCode').value;
 
-            const newApp = {
-                id: Date.now(),
-                name: name,
-                description: desc,
-                code: code,
-                createdAt: new Date().toLocaleTimeString('km-KH', { hour: '2-digit', minute: '2-digit' })
-            };
+            if (editId) {
+                const index = miniApps.findIndex(a => a.id == editId);
+                if (index !== -1) {
+                    miniApps[index].name = name;
+                    miniApps[index].description = desc;
+                    miniApps[index].code = code;
+                }
+                showToast("បានកែប្រែ Mini App ដោយជោគជ័យ!");
+            } else {
+                const newApp = {
+                    id: Date.now(),
+                    name: name,
+                    description: desc,
+                    code: code,
+                    createdAt: new Date().toLocaleTimeString('km-KH', { hour: '2-digit', minute: '2-digit' })
+                };
+                miniApps.unshift(newApp);
+                showToast("បានបង្កើត Mini App ដោយជោគជ័យ!");
+            }
 
-            miniApps.unshift(newApp);
             saveToStorage();
             renderApps();
             closeCreateModal();
             e.target.reset();
-            showToast("បានបង្កើត Mini App ដោយជោគជ័យ!");
+        }
+
+        function editApp(id) {
+            const app = miniApps.find(a => a.id === id);
+            if (!app) return;
+            document.getElementById('editAppId').value = app.id;
+            document.getElementById('appName').value = app.name;
+            document.getElementById('appDesc').value = app.description;
+            document.getElementById('appCode').value = app.code;
+            document.getElementById('formModalTitle').innerHTML = `<i class="fa-solid fa-pen-to-square text-blue-400"></i><span>កែប្រែ Mini App</span>`;
+            
+            document.getElementById('createModal').classList.remove('hidden');
+            document.getElementById('createModal').classList.add('flex');
         }
 
         function insertTemplate() {
-            document.getElementById('appName').value = "កម្មវិធីរាប់លេខ (Counter App)";
-            document.getElementById('appDesc').value = "Mini App សម្រាប់ចុចរាប់ចំនួន អាចស៊ែរឱ្យមិត្តភក្តិសាកល្បងបាន។";
+            document.getElementById('appName').value = "KAISENTZ TOPUP";
+            document.getElementById('appDesc').value = "កម្មវិធីបញ្ចូលពេជ្រហ្គេមរហ័សទាន់ចិត្ត។";
             document.getElementById('appCode').value = `<!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-  body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 90vh; background: #0f172a; color: white; margin: 0; }
-  .box { background: #1e293b; padding: 30px; border-radius: 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
-  h1 { font-size: 56px; margin: 15px 0; color: #38bdf8; }
-  button { background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-size: 16px; cursor: pointer; margin: 5px; }
-  button:hover { background: #2563eb; }
+  body { font-family: sans-serif; background: #f1f5f9; margin: 0; padding: 20px; color: #0f172a; }
+  .card { max-width: 400px; margin: 0 auto; background: white; padding: 24px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+  h2 { margin-top: 0; color: #2563eb; }
+  input { width: 100%; box-sizing: border-box; padding: 12px; margin: 8px 0 16px; border: 1px solid #cbd5e1; border-radius: 12px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .item { border: 2px solid #e2e8f0; border-radius: 12px; padding: 12px; text-align: center; cursor: pointer; font-weight: bold; }
+  .item:hover { border-color: #2563eb; color: #2563eb; }
+  .btn { width: 100%; background: #0f172a; color: white; border: none; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; }
 </style>
 </head>
 <body>
-  <div class="box">
-    <h2>កម្មវិធីរាប់លេខ</h2>
-    <h1 id="count">0</h1>
-    <button onclick="change(-1)">- បន្ថយ</button>
-    <button onclick="change(1)">+ បន្ថែម</button>
+  <div class="card">
+    <h2>💎 Mobile KH Topup</h2>
+    <label>User ID</label>
+    <input type="text" placeholder="បញ្ចូល User ID...">
+    <div class="grid">
+      <div class="item">💎 86 Diamonds</div>
+      <div class="item">💎 172 Diamonds</div>
+      <div class="item">💎 257 Diamonds</div>
+      <div class="item">💎 706 Diamonds</div>
+    </div>
+    <button class="btn" onclick="alert('កំពុងដំណើរការបង់ប្រាក់!')">បង់ប្រាក់ឥឡូវនេះ</button>
   </div>
-  <script>
-    let c = 0;
-    function change(v) { c += v; document.getElementById('count').innerText = c; }
-  <\/script>
 </body>
 </html>`;
         }
@@ -399,9 +440,7 @@
 
             document.getElementById('runnerTitle').innerText = app.name;
             document.getElementById('runnerCodeDisplay').innerText = app.code;
-
-            const iframe = document.getElementById('appIframe');
-            iframe.srcdoc = app.code;
+            document.getElementById('appIframe').srcdoc = app.code;
 
             const modal = document.getElementById('runnerModal');
             modal.classList.remove('hidden');
@@ -457,6 +496,11 @@
         }
 
         function openCreateModal() {
+            document.getElementById('editAppId').value = "";
+            document.getElementById('appName').value = "";
+            document.getElementById('appDesc').value = "";
+            document.getElementById('appCode').value = "";
+            document.getElementById('formModalTitle').innerHTML = `<i class="fa-solid fa-wand-magic-sparkles text-blue-400"></i><span>បង្កើត Mini App ថ្មី</span>`;
             document.getElementById('createModal').classList.remove('hidden');
             document.getElementById('createModal').classList.add('flex');
         }
@@ -479,9 +523,8 @@
             setTimeout(() => { document.getElementById('copyText').innerText = "ចម្លងកូដ"; }, 2000);
         }
 
-        // ចាប់ផ្ដើមដំណើរការ និងពិនិត្យមើល Link ស៊ែរ
-        renderApps();
-        checkSharedUrlOnLoad();
+        // ចាប់ផ្ដើមដំណើរការ
+        checkModeOnLoad();
     </script>
 </body>
 </html>
