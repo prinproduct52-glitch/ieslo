@@ -49,7 +49,7 @@
         <iframe id="sharedFullIframe" class="w-full h-full border-0" sandbox="allow-scripts allow-forms allow-modals allow-popups"></iframe>
     </div>
 
-    <!-- ២. ផ្ទាំងចូលគណនី / ចុះឈ្មោះសម្រាប់ Admin (Auth Screen) -->
+    <!-- ២. ផ្ទាំងចូលគណនី / ចុះឈ្មោះសម្រាប់ Admin -->
     <div id="authScreen" class="fixed inset-0 bg-[#0b0f19] z-[90] flex items-center justify-center p-4 hidden">
         <div class="bg-[#151c2c] border border-gray-700/80 rounded-2xl max-w-md w-full p-8 shadow-2xl relative">
             <div class="text-center mb-6">
@@ -62,11 +62,11 @@
 
             <form id="authForm" onsubmit="handleAuthSubmit(event)" class="space-y-4">
                 <div id="nameFieldGroup" class="hidden">
-                    <label class="block text-xs text-gray-400 mb-1">ឈ្មោះអ្នកប្រើប្រាស់ (Username)</label>
+                    <label class="block text-xs text-gray-400 mb-1">ឈ្មោះអ្នកគ្រប់គ្រង (Admin Name)</label>
                     <input type="text" id="authUsername" placeholder="ឧ. Delta Service" class="w-full bg-[#0b0f19] border border-gray-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
                 </div>
                 <div>
-                    <label class="block text-xs text-gray-400 mb-1">អ៊ីមែល ឬ លេខសម្គាល់ (Email / ID)</label>
+                    <label class="block text-xs text-gray-400 mb-1">អ៊ីមែល (Email)</label>
                     <input type="text" id="authEmail" required placeholder="admin@minigit.io" class="w-full bg-[#0b0f19] border border-gray-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
                 </div>
                 <div>
@@ -85,7 +85,7 @@
         </div>
     </div>
 
-    <!-- ៣. ផ្ទាំង ADMIN STUDIO WORKSPACE (សម្រាប់ម្ចាស់ Admin) -->
+    <!-- ៣. ផ្ទាំង ADMIN STUDIO WORKSPACE (ស្អាត និងទទេស្អាតគ្មានកូដគំរូឡើយ) -->
     <div id="studioWorkspace" class="min-h-screen flex flex-col hidden">
 
         <!-- Toast Notification -->
@@ -100,7 +100,7 @@
                 <div class="flex items-center space-x-3">
                     <div class="bg-blue-500/15 border border-blue-500/30 text-blue-400 text-xs font-semibold px-3 py-1.5 rounded-xl flex items-center space-x-1.5">
                         <i class="fa-solid fa-shield-halved"></i>
-                        <span id="adminNameDisplay">Delta Service</span>
+                        <span id="adminNameDisplay">Admin</span>
                     </div>
                     <div class="hidden sm:flex items-center space-x-2">
                         <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center">
@@ -128,14 +128,14 @@
             </div>
         </nav>
 
-        <!-- Main Content (Danh sách App) -->
+        <!-- Main Content -->
         <main class="max-w-7xl mx-auto w-full px-4 py-6 flex-1">
             <div id="appGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <!-- Apps loaded here -->
             </div>
         </main>
 
-        <!-- Modal បង្កើត ឬកែប្រែ Mini App -->
+        <!-- Modal បង្កើត ឬកែប្រែ Mini App (ទទេស្អាតគ្មានកូដបង្ខំ) -->
         <div id="createModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
             <div class="bg-[#151c2c] border border-gray-700 rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl">
                 <div class="flex justify-between items-center px-5 py-4 border-b border-gray-800">
@@ -151,20 +151,15 @@
                     <input type="hidden" id="editAppId" value="">
                     <div>
                         <label class="block text-xs text-gray-400 mb-1">ឈ្មោះ Mini App *</label>
-                        <input type="text" id="appName" required placeholder="ឧ. KAISENTZ TOPUP..." class="w-full bg-[#0b0f19] border border-gray-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                        <input type="text" id="appName" required placeholder="ឧ. ឈ្មោះកម្មវិធីរបស់អ្នក..." class="w-full bg-[#0b0f19] border border-gray-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
                     </div>
                     <div>
                         <label class="block text-xs text-gray-400 mb-1">ការពិពណ៌នាខ្លី *</label>
                         <input type="text" id="appDesc" required placeholder="រៀបរាប់ខ្លីៗពីមុខងាររបស់ App..." class="w-full bg-[#0b0f19] border border-gray-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
                     </div>
                     <div>
-                        <div class="flex justify-between items-center mb-1">
-                            <label class="text-xs text-gray-400">កូដកម្មវិធី (HTML / CSS / JS) *</label>
-                            <button type="button" onclick="insertTemplate()" class="text-[11px] text-blue-400 hover:underline">
-                                + ដាក់កូដគំរូ Topup
-                            </button>
-                        </div>
-                        <textarea id="appCode" required rows="8" placeholder="សរសេរ ឬ Paste កូដ HTML/CSS/JS នៅទីនេះ..." class="w-full bg-[#0b0f19] border border-gray-700 rounded-xl p-3 text-xs font-mono text-cyan-300 focus:outline-none focus:border-blue-500"></textarea>
+                        <label class="block text-xs text-gray-400 mb-1">កូដកម្មវិធី (HTML / CSS / JS) *</label>
+                        <textarea id="appCode" required rows="10" placeholder="សរសេរ ឬ Paste កូដ HTML របស់អ្នកនៅទីនេះ..." class="w-full bg-[#0b0f19] border border-gray-700 rounded-xl p-3 text-xs font-mono text-cyan-300 focus:outline-none focus:border-blue-500"></textarea>
                     </div>
                     <div class="pt-2 flex justify-end space-x-2">
                         <button type="button" onclick="closeCreateModal()" class="px-4 py-2 rounded-xl text-xs text-gray-400 hover:bg-gray-800">បោះបង់</button>
@@ -239,7 +234,6 @@
                 } catch (e) {}
             }
 
-            // ពិនិត្យមើលថាតើ Admin បាន Login ហើយឬยัง
             const loggedInAdmin = localStorage.getItem('minigit_logged_admin');
             if (!loggedInAdmin) {
                 document.getElementById('authScreen').classList.remove('hidden');
@@ -283,7 +277,7 @@
             const password = document.getElementById('authPassword').value;
 
             if (isSignupMode) {
-                const username = document.getElementById('authUsername').value.trim() || "Delta Service";
+                const username = document.getElementById('authUsername').value.trim() || "Admin";
                 localStorage.setItem('minigit_admin_account', JSON.stringify({ email, password, username }));
                 localStorage.setItem('minigit_logged_admin', username);
                 showToast("ចុះឈ្មោះជោគជ័យ!");
@@ -292,8 +286,7 @@
                 if (savedAcc && savedAcc.email === email && savedAcc.password === password) {
                     localStorage.setItem('minigit_logged_admin', savedAcc.username);
                 } else if (!savedAcc && email && password) {
-                    // Default account if none created
-                    localStorage.setItem('minigit_logged_admin', "Delta Service");
+                    localStorage.setItem('minigit_logged_admin', "Admin");
                 } else {
                     alert("អ៊ីមែល ឬ ពាក្យសម្ងាត់មិនត្រឹមត្រូវ!");
                     return;
@@ -444,38 +437,6 @@
             document.getElementById('formModalTitle').innerHTML = `<i class="fa-solid fa-pen-to-square text-blue-400"></i><span>កែប្រែ Mini App</span>`;
             document.getElementById('createModal').classList.remove('hidden');
             document.getElementById('createModal').classList.add('flex');
-        }
-
-        function insertTemplate() {
-            document.getElementById('appName').value = "KAISENTZ TOPUP";
-            document.getElementById('appDesc').value = "កម្មវិធីបញ្ចូលពេជ្រហ្គេមរហ័សទាន់ចិត្ត។";
-            document.getElementById('appCode').value = `<!DOCTYPE html>
-<html>
-<head><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-  body { font-family: sans-serif; background: #f1f5f9; margin: 0; padding: 20px; color: #0f172a; }
-  .card { max-width: 400px; margin: 0 auto; background: white; padding: 24px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-  h2 { color: #2563eb; margin-top:0; }
-  input { width: 100%; box-sizing: border-box; padding: 12px; margin: 8px 0 16px; border: 1px solid #cbd5e1; border-radius: 12px; }
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-  .item { border: 2px solid #e2e8f0; border-radius: 12px; padding: 12px; text-align: center; cursor: pointer; font-weight: bold; }
-  .item:hover { border-color: #2563eb; color: #2563eb; }
-  .btn { width: 100%; background: #0f172a; color: white; border: none; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; }
-</style>
-</head>
-<body>
-  <div class="card">
-    <h2>💎 Mobile KH Topup</h2>
-    <label>User ID</label>
-    <input type="text" placeholder="បញ្ចូល User ID...">
-    <div class="grid">
-      <div class="item">💎 86 Diamonds</div>
-      <div class="item">💎 172 Diamonds</div>
-    </div>
-    <button class="btn" onclick="alert('បង់ប្រាក់ជោគជ័យ!')">បង់ប្រាក់ឥឡូវនេះ</button>
-  </div>
-</body>
-</html>`;
         }
 
         function launchApp(id, mode) {
