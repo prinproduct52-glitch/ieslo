@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MiniGit - App Studio</title>
+    <title>MiniGit - Admin Panel & Studio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -44,34 +44,69 @@
 </head>
 <body class="min-h-screen flex flex-col font-sans">
 
-    <!-- ========================================== -->
-    <!-- ១. ផ្ទាំងសម្រាប់អ្នកចូលតាម LINK ស៊ែរ (ឃើញតែ MINI APP ១០០%) -->
-    <!-- ========================================== -->
+    <!-- ១. ផ្ទាំងសម្រាប់ភ្ញៀវចូលតាម Link ស៊ែរ (ឃើញតែ Mini App សុទ្ធ ១០០%) -->
     <div id="sharedViewerContainer" class="fixed inset-0 w-screen h-screen bg-white z-[100] hidden">
         <iframe id="sharedFullIframe" class="w-full h-full border-0" sandbox="allow-scripts allow-forms allow-modals allow-popups"></iframe>
     </div>
 
-    <!-- ========================================== -->
-    <!-- ២. ផ្ទាំង STUDIO ដើមសម្រាប់អ្នកបង្កើត (OWNER) -->
-    <!-- ========================================== -->
-    <div id="studioWorkspace" class="min-h-screen flex flex-col">
+    <!-- ២. ផ្ទាំងចូលគណនី / ចុះឈ្មោះសម្រាប់ Admin (Auth Screen) -->
+    <div id="authScreen" class="fixed inset-0 bg-[#0b0f19] z-[90] flex items-center justify-center p-4 hidden">
+        <div class="bg-[#151c2c] border border-gray-700/80 rounded-2xl max-w-md w-full p-8 shadow-2xl relative">
+            <div class="text-center mb-6">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center shadow-lg shadow-blue-500/30 mx-auto mb-3">
+                    <i class="fa-brands fa-github-alt text-white text-2xl"></i>
+                </div>
+                <h2 id="authTitle" class="text-xl font-bold text-white">ចូលគណនី Admin Panel</h2>
+                <p class="text-xs text-gray-400 mt-1">គ្រប់គ្រង និងបង្កើត Mini App ផ្ទាល់ខ្លួនរបស់អ្នក</p>
+            </div>
 
-        <!-- ផ្ទាំងជូនដំណឹងពេលចម្លង Link -->
+            <form id="authForm" onsubmit="handleAuthSubmit(event)" class="space-y-4">
+                <div id="nameFieldGroup" class="hidden">
+                    <label class="block text-xs text-gray-400 mb-1">ឈ្មោះអ្នកប្រើប្រាស់ (Username)</label>
+                    <input type="text" id="authUsername" placeholder="ឧ. Delta Service" class="w-full bg-[#0b0f19] border border-gray-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">អ៊ីមែល ឬ លេខសម្គាល់ (Email / ID)</label>
+                    <input type="text" id="authEmail" required placeholder="admin@minigit.io" class="w-full bg-[#0b0f19] border border-gray-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">ពាក្យសម្ងាត់ (Password)</label>
+                    <input type="password" id="authPassword" required placeholder="••••••••" class="w-full bg-[#0b0f19] border border-gray-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
+                </div>
+                <button type="submit" id="authSubmitBtn" class="w-full bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium py-3 rounded-xl shadow-lg shadow-blue-600/30 transition">
+                    ចូលគណនី (Login)
+                </button>
+            </form>
+
+            <div class="mt-6 text-center text-xs text-gray-400">
+                <span id="authToggleText">មិនទាន់មានគណនីមែនទេ?</span>
+                <button onclick="toggleAuthMode()" id="authToggleBtn" class="text-blue-400 font-semibold hover:underline ml-1">ចុះឈ្មោះ (Sign Up)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ៣. ផ្ទាំង ADMIN STUDIO WORKSPACE (សម្រាប់ម្ចាស់ Admin) -->
+    <div id="studioWorkspace" class="min-h-screen flex flex-col hidden">
+
+        <!-- Toast Notification -->
         <div id="toast" class="fixed bottom-5 right-5 bg-emerald-600 text-white text-xs font-medium px-4 py-3 rounded-xl shadow-xl hidden items-center space-x-2 z-50 transition-all">
             <i class="fa-solid fa-circle-check text-sm"></i>
-            <span id="toastMsg">បានចម្លង Link សម្រាប់ស៊ែរ!</span>
+            <span id="toastMsg">ជោគជ័យ!</span>
         </div>
 
-        <!-- របារខាងលើ (Navbar) -->
+        <!-- Navbar -->
         <nav class="glass-nav sticky top-0 z-40 px-4 py-3.5">
             <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-3">
-                <div class="flex items-center space-x-2.5 cursor-pointer" onclick="window.location.hash=''; location.reload();">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center shadow-lg shadow-blue-500/30">
-                        <i class="fa-brands fa-github-alt text-white text-xl"></i>
+                <div class="flex items-center space-x-3">
+                    <div class="bg-blue-500/15 border border-blue-500/30 text-blue-400 text-xs font-semibold px-3 py-1.5 rounded-xl flex items-center space-x-1.5">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span id="adminNameDisplay">Delta Service</span>
                     </div>
-                    <div>
-                        <span class="text-lg font-bold text-white">MiniGit</span>
-                        <span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded-full ml-1">ORIGINAL STUDIO</span>
+                    <div class="hidden sm:flex items-center space-x-2">
+                        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center">
+                            <i class="fa-brands fa-github-alt text-white"></i>
+                        </div>
+                        <span class="text-sm font-bold text-white">MiniGit <span class="text-[10px] bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full">STUDIO</span></span>
                     </div>
                 </div>
 
@@ -81,26 +116,26 @@
                         class="w-full bg-[#1e293b]/80 border border-gray-700 rounded-xl pl-9 pr-3 py-1.5 text-xs text-white placeholder-gray-400 focus:outline-none focus:border-blue-500">
                 </div>
 
-                <div class="flex items-center space-x-2 w-full sm:w-auto justify-between sm:justify-end">
+                <div class="flex items-center space-x-2">
                     <button onclick="openCreateModal()" class="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-xs font-medium px-4 py-2.5 rounded-xl shadow-lg shadow-blue-600/20 flex items-center space-x-1.5 transition">
                         <i class="fa-solid fa-plus"></i>
                         <span>បង្កើត Mini App ថ្មី</span>
                     </button>
-                    <button onclick="clearAllApps()" id="clearAllBtn" class="hidden bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 text-xs px-3 py-2.5 rounded-xl transition" title="លុបទាំងអស់">
-                        <i class="fa-solid fa-trash-can"></i>
+                    <button onclick="adminLogout()" class="bg-gray-800 hover:bg-red-500/20 text-gray-300 hover:text-red-400 border border-gray-700 text-xs px-3.5 py-2.5 rounded-xl transition" title="ចាកចេញ (Logout)">
+                        <i class="fa-solid fa-right-from-bracket"></i>
                     </button>
                 </div>
             </div>
         </nav>
 
-        <!-- បញ្ជី Mini Apps របស់អ្នកបង្កើត -->
+        <!-- Main Content (Danh sách App) -->
         <main class="max-w-7xl mx-auto w-full px-4 py-6 flex-1">
             <div id="appGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Mini Apps នឹងបង្ហាញនៅទីនេះ -->
+                <!-- Apps loaded here -->
             </div>
         </main>
 
-        <!-- ផ្ទាំងបង្កើត ឬកែប្រែ Mini App -->
+        <!-- Modal បង្កើត ឬកែប្រែ Mini App -->
         <div id="createModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
             <div class="bg-[#151c2c] border border-gray-700 rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl">
                 <div class="flex justify-between items-center px-5 py-4 border-b border-gray-800">
@@ -126,7 +161,7 @@
                         <div class="flex justify-between items-center mb-1">
                             <label class="text-xs text-gray-400">កូដកម្មវិធី (HTML / CSS / JS) *</label>
                             <button type="button" onclick="insertTemplate()" class="text-[11px] text-blue-400 hover:underline">
-                                + ដាក់កូដគំរូសាកល្បង
+                                + ដាក់កូដគំរូ Topup
                             </button>
                         </div>
                         <textarea id="appCode" required rows="8" placeholder="សរសេរ ឬ Paste កូដ HTML/CSS/JS នៅទីនេះ..." class="w-full bg-[#0b0f19] border border-gray-700 rounded-xl p-3 text-xs font-mono text-cyan-300 focus:outline-none focus:border-blue-500"></textarea>
@@ -139,28 +174,23 @@
             </div>
         </div>
 
-        <!-- ផ្ទាំងសាកល្បង និងមើលកូដសម្រាប់តែអ្នកបង្កើត (Owner Runner Modal) -->
+        <!-- Modal សាកល្បង និងស៊ែរ Link -->
         <div id="runnerModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-3 sm:p-6">
             <div class="bg-[#151c2c] border border-gray-700 rounded-2xl max-w-4xl w-full h-[88vh] flex flex-col overflow-hidden shadow-2xl">
                 <div class="flex flex-wrap justify-between items-center gap-2 px-4 py-3 border-b border-gray-800 bg-[#0f172a]">
                     <div class="flex items-center space-x-2">
                         <span class="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse"></span>
-                        <h3 id="runnerTitle" class="font-bold text-sm text-white truncate max-w-[140px] sm:max-w-xs">ឈ្មោះ App</h3>
+                        <h3 id="runnerTitle" class="font-bold text-sm text-white truncate max-w-[140px]">ឈ្មោះ App</h3>
                     </div>
                     
                     <div class="flex items-center space-x-2">
                         <button onclick="shareCurrentApp()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium px-3 py-1.5 rounded-xl flex items-center space-x-1.5 transition shadow-lg shadow-emerald-600/20">
                             <i class="fa-solid fa-share-nodes"></i>
-                            <span>ស៊ែរ Link (សម្រាប់ភ្ញៀវ)</span>
+                            <span>ស៊ែរ Link (ឱ្យភ្ញៀវប្រើ)</span>
                         </button>
-
                         <div class="bg-[#1e293b] p-1 rounded-xl flex space-x-1">
-                            <button onclick="switchTab('preview')" id="tabPreviewBtn" class="px-2.5 py-1 rounded-lg text-xs font-medium bg-blue-600 text-white transition">
-                                <i class="fa-solid fa-play mr-1"></i> App
-                            </button>
-                            <button onclick="switchTab('code')" id="tabCodeBtn" class="px-2.5 py-1 rounded-lg text-xs font-medium text-gray-400 hover:text-white transition">
-                                <i class="fa-solid fa-code mr-1"></i> កូដ
-                            </button>
+                            <button onclick="switchTab('preview')" id="tabPreviewBtn" class="px-2.5 py-1 rounded-lg text-xs font-medium bg-blue-600 text-white transition">App</button>
+                            <button onclick="switchTab('code')" id="tabCodeBtn" class="px-2.5 py-1 rounded-lg text-xs font-medium text-gray-400 hover:text-white transition">កូដ</button>
                         </div>
                         <button onclick="closeRunnerModal()" class="text-gray-400 hover:text-white px-1.5">
                             <i class="fa-solid fa-xmark text-xl"></i>
@@ -175,10 +205,8 @@
                 <div id="codePane" class="hidden flex-1 bg-[#0b0f19] p-4 overflow-y-auto flex-col justify-between">
                     <div>
                         <div class="flex justify-between items-center mb-2 pb-2 border-b border-gray-800">
-                            <span class="text-xs text-gray-400 font-mono">index.html (សម្រាប់តែអ្នកបង្កើត)</span>
-                            <button onclick="copyAppCode()" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-200 px-3 py-1 rounded-lg">
-                                <i class="fa-regular fa-copy mr-1"></i> <span id="copyText">ចម្លងកូដ</span>
-                            </button>
+                            <span class="text-xs text-gray-400 font-mono">index.html</span>
+                            <button onclick="copyAppCode()" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-200 px-3 py-1 rounded-lg">ចម្លងកូដ</button>
                         </div>
                         <pre class="text-xs font-mono text-cyan-300 overflow-x-auto whitespace-pre-wrap"><code id="runnerCodeDisplay"></code></pre>
                     </div>
@@ -189,8 +217,98 @@
     </div>
 
     <script>
+        let isSignupMode = false;
         let miniApps = JSON.parse(localStorage.getItem('minigit_apps')) || [];
         let activeApp = null;
+
+        function checkAuthAndInit() {
+            const hash = window.location.hash;
+            if (hash.startsWith('#app=')) {
+                try {
+                    const encoded = hash.replace('#app=', '');
+                    const jsonStr = LZString.decompressFromEncodedURIComponent(encoded);
+                    if (jsonStr) {
+                        const sharedData = JSON.parse(jsonStr);
+                        document.getElementById('authScreen').classList.add('hidden');
+                        document.getElementById('studioWorkspace').classList.add('hidden');
+                        document.getElementById('sharedViewerContainer').classList.remove('hidden');
+                        document.title = sharedData.n || "Mini App";
+                        document.getElementById('sharedFullIframe').srcdoc = sharedData.c;
+                        return;
+                    }
+                } catch (e) {}
+            }
+
+            // ពិនិត្យមើលថាតើ Admin បាន Login ហើយឬยัง
+            const loggedInAdmin = localStorage.getItem('minigit_logged_admin');
+            if (!loggedInAdmin) {
+                document.getElementById('authScreen').classList.remove('hidden');
+                document.getElementById('studioWorkspace').classList.add('hidden');
+                document.getElementById('sharedViewerContainer').classList.add('hidden');
+            } else {
+                document.getElementById('authScreen').classList.add('hidden');
+                document.getElementById('studioWorkspace').classList.remove('hidden');
+                document.getElementById('sharedViewerContainer').classList.add('hidden');
+                document.getElementById('adminNameDisplay').innerText = loggedInAdmin;
+                renderApps();
+            }
+        }
+
+        function toggleAuthMode() {
+            isSignupMode = !isSignupMode;
+            const title = document.getElementById('authTitle');
+            const submitBtn = document.getElementById('authSubmitBtn');
+            const toggleText = document.getElementById('authToggleText');
+            const toggleBtn = document.getElementById('authToggleBtn');
+            const nameGroup = document.getElementById('nameFieldGroup');
+
+            if (isSignupMode) {
+                title.innerText = "ចុះឈ្មោះ Admin ថ្មី";
+                submitBtn.innerText = "ចុះឈ្មោះ (Sign Up)";
+                toggleText.innerText = "មានគណនីរួចហើយ?";
+                toggleBtn.innerText = "ចូលគណនី (Login)";
+                nameGroup.classList.remove('hidden');
+            } else {
+                title.innerText = "ចូលគណនី Admin Panel";
+                submitBtn.innerText = "ចូលគណនី (Login)";
+                toggleText.innerText = "មិនទាន់មានគណនីមែនទេ?";
+                toggleBtn.innerText = "ចុះឈ្មោះ (Sign Up)";
+                nameGroup.classList.add('hidden');
+            }
+        }
+
+        function handleAuthSubmit(e) {
+            e.preventDefault();
+            const email = document.getElementById('authEmail').value.trim();
+            const password = document.getElementById('authPassword').value;
+
+            if (isSignupMode) {
+                const username = document.getElementById('authUsername').value.trim() || "Delta Service";
+                localStorage.setItem('minigit_admin_account', JSON.stringify({ email, password, username }));
+                localStorage.setItem('minigit_logged_admin', username);
+                showToast("ចុះឈ្មោះជោគជ័យ!");
+            } else {
+                const savedAcc = JSON.parse(localStorage.getItem('minigit_admin_account'));
+                if (savedAcc && savedAcc.email === email && savedAcc.password === password) {
+                    localStorage.setItem('minigit_logged_admin', savedAcc.username);
+                } else if (!savedAcc && email && password) {
+                    // Default account if none created
+                    localStorage.setItem('minigit_logged_admin', "Delta Service");
+                } else {
+                    alert("អ៊ីមែល ឬ ពាក្យសម្ងាត់មិនត្រឹមត្រូវ!");
+                    return;
+                }
+                showToast("ចូលគណនីបានสำเร็จ!");
+            }
+            checkAuthAndInit();
+        }
+
+        function adminLogout() {
+            if (confirm('តើអ្នកចង់ចាកចេញពី Admin Panel ទេ?')) {
+                localStorage.removeItem('minigit_logged_admin');
+                checkAuthAndInit();
+            }
+        }
 
         function saveToStorage() {
             localStorage.setItem('minigit_apps', JSON.stringify(miniApps));
@@ -201,18 +319,11 @@
             document.getElementById('toastMsg').innerText = message;
             toast.classList.remove('hidden');
             toast.classList.add('flex');
-            setTimeout(() => {
-                toast.classList.add('hidden');
-                toast.classList.remove('flex');
-            }, 3000);
+            setTimeout(() => { toast.classList.add('hidden'); toast.classList.remove('flex'); }, 3000);
         }
 
-        // បង្កើត Link សម្រាប់ចែករំលែក (ពេលគេចូល គឺឃើញតែ Mini App សុទ្ធ)
         function generateShareLink(app) {
-            const payload = JSON.stringify({
-                n: app.name,
-                c: app.code
-            });
+            const payload = JSON.stringify({ n: app.name, c: app.code });
             const compressed = LZString.compressToEncodedURIComponent(payload);
             const baseUrl = window.location.origin + window.location.pathname;
             return `${baseUrl}#app=${compressed}`;
@@ -221,74 +332,24 @@
         async function shareAppById(id) {
             const app = miniApps.find(a => a.id === id);
             if (!app) return;
-            await copyOrNativeShare(app);
+            const shareUrl = generateShareLink(app);
+            if (navigator.share) {
+                try { await navigator.share({ title: app.name, url: shareUrl }); return; } catch (err) {}
+            }
+            navigator.clipboard.writeText(shareUrl);
+            showToast("បានចម្លង Link សម្រាប់ស៊ែរឱ្យភ្ញៀវរួចរាល់!");
         }
 
         async function shareCurrentApp() {
             if (!activeApp) return;
-            await copyOrNativeShare(activeApp);
-        }
-
-        async function copyOrNativeShare(app) {
-            const shareUrl = generateShareLink(app);
-            if (navigator.share) {
-                try {
-                    await navigator.share({
-                        title: app.name,
-                        url: shareUrl
-                    });
-                    return;
-                } catch (err) {}
-            }
+            const shareUrl = generateShareLink(activeApp);
             navigator.clipboard.writeText(shareUrl);
-            showToast("បានចម្លង Link! ពេលគេចុចចូល នឹងឃើញតែ Mini App ប៉ុណ្ណោះ។");
+            showToast("បានចម្លង Link សម្រាប់ស៊ែររួចរាល់!");
         }
-
-        // មុខងារសំខាន់៖ ត្រួតពិនិត្យថាជាភ្ញៀវចូលតាម Link ស៊ែរ ឬជាម្ចាស់វេបសាយដើម
-        function checkModeOnLoad() {
-            const hash = window.location.hash;
-            if (hash.startsWith('#app=')) {
-                try {
-                    const encoded = hash.replace('#app=', '');
-                    const jsonStr = LZString.decompressFromEncodedURIComponent(encoded);
-                    if (jsonStr) {
-                        const sharedData = JSON.parse(jsonStr);
-                        
-                        // ១. លាក់ផ្ទាំង Studio និងកន្លែងមើលកូដទាំងអស់
-                        document.getElementById('studioWorkspace').classList.add('hidden');
-                        
-                        // ២. បើកបង្ហាញតែតួ Mini App ពេញអេក្រង់ ១០០%
-                        const viewer = document.getElementById('sharedViewerContainer');
-                        viewer.classList.remove('hidden');
-                        
-                        document.title = sharedData.n || "Mini App";
-                        document.getElementById('sharedFullIframe').srcdoc = sharedData.c;
-                        return;
-                    }
-                } catch (e) {
-                    console.error("Link មិនត្រឹមត្រូវ", e);
-                }
-            }
-
-            // បើគ្មាន #app= ទេ គឺបង្ហាញផ្ទាំង Original Studio សម្រាប់អ្នកបង្កើតធម្មតា
-            document.getElementById('sharedViewerContainer').classList.add('hidden');
-            document.getElementById('studioWorkspace').classList.remove('hidden');
-            renderApps();
-        }
-
-        // ចាប់សញ្ញាពេលមានការប្ដូរ URL Hash
-        window.addEventListener('hashchange', checkModeOnLoad);
 
         function renderApps(list = miniApps) {
             const grid = document.getElementById('appGrid');
-            const clearBtn = document.getElementById('clearAllBtn');
             grid.innerHTML = '';
-
-            if (miniApps.length > 0) {
-                clearBtn.classList.remove('hidden');
-            } else {
-                clearBtn.classList.add('hidden');
-            }
 
             if (list.length === 0) {
                 grid.innerHTML = `
@@ -297,8 +358,8 @@
                             <i class="fa-solid fa-cubes"></i>
                         </div>
                         <h3 class="text-base font-bold text-white mb-1">មិនទាន់មាន Mini App នៅឡើយទេ</h3>
-                        <p class="text-xs text-gray-400 max-w-sm mb-5">បង្កើត Mini App នៅទីនេះ។ ពេលអ្នកស៊ែរ Link ឱ្យគេ គេនឹងឃើញតែកម្មវិធីសុទ្ធ មិនឃើញកន្លែងកូដឡើយ!</p>
-                        <button onclick="openCreateModal()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium px-5 py-2.5 rounded-xl shadow-lg shadow-blue-600/20 flex items-center space-x-2 transition">
+                        <p class="text-xs text-gray-400 max-w-sm mb-5">បង្កើត Mini App ផ្ទាល់ខ្លួនរបស់អ្នក រួចចុច Share ដើម្បីផ្ញើ Link ឱ្យមិត្តភក្តិប្រើប្រាស់!</p>
+                        <button onclick="openCreateModal()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium px-5 py-2.5 rounded-xl shadow-lg transition">
                             <i class="fa-solid fa-plus"></i>
                             <span>បង្កើត Mini App ដំបូង</span>
                         </button>
@@ -323,29 +384,20 @@
                                 </div>
                             </div>
                             <div class="flex items-center space-x-1">
-                                <button onclick="editApp(${app.id})" class="text-gray-400 hover:text-blue-400 p-1.5 transition" title="កែប្រែកូដ">
-                                    <i class="fa-regular fa-pen-to-square text-xs"></i>
-                                </button>
-                                <button onclick="deleteApp(${app.id})" class="text-gray-500 hover:text-red-400 p-1.5 transition" title="លុប App នេះ">
-                                    <i class="fa-regular fa-trash-can text-xs"></i>
-                                </button>
+                                <button onclick="editApp(${app.id})" class="text-gray-400 hover:text-blue-400 p-1.5" title="កែប្រែ"><i class="fa-regular fa-pen-to-square text-xs"></i></button>
+                                <button onclick="deleteApp(${app.id})" class="text-gray-500 hover:text-red-400 p-1.5" title="លុប"><i class="fa-regular fa-trash-can text-xs"></i></button>
                             </div>
                         </div>
                         <p class="text-gray-400 text-xs leading-relaxed mb-5">${app.description}</p>
                     </div>
-
                     <div class="flex space-x-2 pt-3 border-t border-gray-800/80">
-                        <button onclick="launchApp(${app.id}, 'preview')" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium py-2.5 rounded-xl transition flex items-center justify-center space-x-1.5 shadow-lg shadow-blue-600/20">
-                            <i class="fa-solid fa-play text-[10px]"></i>
-                            <span>សាកល្បង</span>
+                        <button onclick="launchApp(${app.id}, 'preview')" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium py-2.5 rounded-xl transition flex items-center justify-center space-x-1.5">
+                            <i class="fa-solid fa-play text-[10px]"></i><span>សាកល្បង</span>
                         </button>
-                        <button onclick="shareAppById(${app.id})" class="bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-emerald-500/30 text-xs font-medium px-3.5 py-2.5 rounded-xl transition flex items-center space-x-1" title="ស៊ែរ Link ឱ្យភ្ញៀវប្រើ (អត់ឃើញកូដ)">
-                            <i class="fa-solid fa-share-nodes"></i>
-                            <span>ស៊ែរ Link</span>
+                        <button onclick="shareAppById(${app.id})" class="bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-emerald-500/30 text-xs font-medium px-3.5 py-2.5 rounded-xl transition flex items-center space-x-1">
+                            <i class="fa-solid fa-share-nodes"></i><span>ស៊ែរ Link</span>
                         </button>
-                        <button onclick="launchApp(${app.id}, 'code')" class="bg-[#1e293b] hover:bg-gray-700 text-gray-300 text-xs font-medium px-3 py-2.5 rounded-xl transition" title="មើលកូដ">
-                            <i class="fa-solid fa-code"></i>
-                        </button>
+                        <button onclick="launchApp(${app.id}, 'code')" class="bg-[#1e293b] hover:bg-gray-700 text-gray-300 text-xs font-medium px-3 py-2.5 rounded-xl transition"><i class="fa-solid fa-code"></i></button>
                     </div>
                 `;
                 grid.appendChild(card);
@@ -366,19 +418,16 @@
                     miniApps[index].description = desc;
                     miniApps[index].code = code;
                 }
-                showToast("បានកែប្រែ Mini App ដោយជោគជ័យ!");
+                showToast("បានកែប្រែ Mini App រួចរាល់!");
             } else {
                 const newApp = {
                     id: Date.now(),
-                    name: name,
-                    description: desc,
-                    code: code,
+                    name, description: desc, code,
                     createdAt: new Date().toLocaleTimeString('km-KH', { hour: '2-digit', minute: '2-digit' })
                 };
                 miniApps.unshift(newApp);
-                showToast("បានបង្កើត Mini App ដោយជោគជ័យ!");
+                showToast("បានបង្កើត Mini App ថ្មីជោគជ័យ!");
             }
-
             saveToStorage();
             renderApps();
             closeCreateModal();
@@ -393,7 +442,6 @@
             document.getElementById('appDesc').value = app.description;
             document.getElementById('appCode').value = app.code;
             document.getElementById('formModalTitle').innerHTML = `<i class="fa-solid fa-pen-to-square text-blue-400"></i><span>កែប្រែ Mini App</span>`;
-            
             document.getElementById('createModal').classList.remove('hidden');
             document.getElementById('createModal').classList.add('flex');
         }
@@ -403,12 +451,11 @@
             document.getElementById('appDesc').value = "កម្មវិធីបញ្ចូលពេជ្រហ្គេមរហ័សទាន់ចិត្ត។";
             document.getElementById('appCode').value = `<!DOCTYPE html>
 <html>
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<head><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
   body { font-family: sans-serif; background: #f1f5f9; margin: 0; padding: 20px; color: #0f172a; }
   .card { max-width: 400px; margin: 0 auto; background: white; padding: 24px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-  h2 { margin-top: 0; color: #2563eb; }
+  h2 { color: #2563eb; margin-top:0; }
   input { width: 100%; box-sizing: border-box; padding: 12px; margin: 8px 0 16px; border: 1px solid #cbd5e1; border-radius: 12px; }
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
   .item { border: 2px solid #e2e8f0; border-radius: 12px; padding: 12px; text-align: center; cursor: pointer; font-weight: bold; }
@@ -424,10 +471,8 @@
     <div class="grid">
       <div class="item">💎 86 Diamonds</div>
       <div class="item">💎 172 Diamonds</div>
-      <div class="item">💎 257 Diamonds</div>
-      <div class="item">💎 706 Diamonds</div>
     </div>
-    <button class="btn" onclick="alert('កំពុងដំណើរការបង់ប្រាក់!')">បង់ប្រាក់ឥឡូវនេះ</button>
+    <button class="btn" onclick="alert('បង់ប្រាក់ជោគជ័យ!')">បង់ប្រាក់ឥឡូវនេះ</button>
   </div>
 </body>
 </html>`;
@@ -437,35 +482,25 @@
             const app = miniApps.find(a => a.id === id);
             if (!app) return;
             activeApp = app;
-
             document.getElementById('runnerTitle').innerText = app.name;
             document.getElementById('runnerCodeDisplay').innerText = app.code;
             document.getElementById('appIframe').srcdoc = app.code;
-
-            const modal = document.getElementById('runnerModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-
+            document.getElementById('runnerModal').classList.remove('hidden');
+            document.getElementById('runnerModal').classList.add('flex');
             switchTab(mode);
         }
 
         function switchTab(tab) {
-            const previewPane = document.getElementById('previewPane');
-            const codePane = document.getElementById('codePane');
-            const btnPreview = document.getElementById('tabPreviewBtn');
-            const btnCode = document.getElementById('tabCodeBtn');
-
+            const p = document.getElementById('previewPane'), c = document.getElementById('codePane');
+            const bp = document.getElementById('tabPreviewBtn'), bc = document.getElementById('tabCodeBtn');
             if (tab === 'preview') {
-                previewPane.classList.remove('hidden');
-                codePane.classList.add('hidden');
-                btnPreview.className = "px-2.5 py-1 rounded-lg text-xs font-medium bg-blue-600 text-white transition";
-                btnCode.className = "px-2.5 py-1 rounded-lg text-xs font-medium text-gray-400 hover:text-white transition";
+                p.classList.remove('hidden'); c.classList.add('hidden');
+                bp.className = "px-2.5 py-1 rounded-lg text-xs font-medium bg-blue-600 text-white transition";
+                bc.className = "px-2.5 py-1 rounded-lg text-xs font-medium text-gray-400 hover:text-white transition";
             } else {
-                previewPane.classList.add('hidden');
-                codePane.classList.remove('hidden');
-                codePane.classList.add('flex');
-                btnCode.className = "px-2.5 py-1 rounded-lg text-xs font-medium bg-blue-600 text-white transition";
-                btnPreview.className = "px-2.5 py-1 rounded-lg text-xs font-medium text-gray-400 hover:text-white transition";
+                p.classList.add('hidden'); c.classList.remove('hidden'); c.classList.add('flex');
+                bc.className = "px-2.5 py-1 rounded-lg text-xs font-medium bg-blue-600 text-white transition";
+                bp.className = "px-2.5 py-1 rounded-lg text-xs font-medium text-gray-400 hover:text-white transition";
             }
         }
 
@@ -477,22 +512,9 @@
             }
         }
 
-        function clearAllApps() {
-            if (confirm('តើអ្នកចង់លុប Mini App ទាំងអស់ចេញពីបញ្ជីមែនទេ?')) {
-                miniApps = [];
-                saveToStorage();
-                window.location.hash = '';
-                renderApps();
-            }
-        }
-
         function filterApps() {
             const q = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = miniApps.filter(a => 
-                a.name.toLowerCase().includes(q) || 
-                a.description.toLowerCase().includes(q)
-            );
-            renderApps(filtered);
+            renderApps(miniApps.filter(a => a.name.toLowerCase().includes(q) || a.description.toLowerCase().includes(q)));
         }
 
         function openCreateModal() {
@@ -505,26 +527,15 @@
             document.getElementById('createModal').classList.add('flex');
         }
 
-        function closeCreateModal() {
-            document.getElementById('createModal').classList.add('hidden');
-            document.getElementById('createModal').classList.remove('flex');
-        }
-
-        function closeRunnerModal() {
-            document.getElementById('runnerModal').classList.add('hidden');
-            document.getElementById('runnerModal').classList.remove('flex');
-            document.getElementById('appIframe').srcdoc = '';
-        }
-
+        function closeCreateModal() { document.getElementById('createModal').classList.add('hidden'); document.getElementById('createModal').classList.remove('flex'); }
+        function closeRunnerModal() { document.getElementById('runnerModal').classList.add('hidden'); document.getElementById('runnerModal').classList.remove('flex'); document.getElementById('appIframe').srcdoc = ''; }
         function copyAppCode() {
-            const code = document.getElementById('runnerCodeDisplay').innerText;
-            navigator.clipboard.writeText(code);
-            document.getElementById('copyText').innerText = "បានចម្លង ✓";
-            setTimeout(() => { document.getElementById('copyText').innerText = "ចម្លងកូដ"; }, 2000);
+            navigator.clipboard.writeText(document.getElementById('runnerCodeDisplay').innerText);
+            showToast("បានចម្លងកូដ!");
         }
 
-        // ចាប់ផ្ដើមដំណើរការ
-        checkModeOnLoad();
+        window.addEventListener('hashchange', checkAuthAndInit);
+        checkAuthAndInit();
     </script>
 </body>
 </html>
